@@ -162,13 +162,14 @@ Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
 ## Authors
 
 **v1.0 (2019)**  
-Paulo Aparecido Amaral Junior, Marcio Flavio Dutra Moraes, Flavio Afonso Goncalves Mourao  
+Paulo Aparecido Amaral Junior, Flavio Afonso Goncalves Mourao, Marcio Flavio Dutra Moraes
 Nucleo de Neurociencias, UFMG, Brazil
 
 **v2.0 (2026)**  
 Flavio Mourao (mourao.fg@gmail.com)
-Federal University of Minas Gerais, Brazil
+CNPq/MCTI/FNDCT Nº 21/2024 - Conhecimento Brasil - Processo: 446467/2024-3 
+Federal University of Minas Gerais, Brazil  
 
-Development started: December 2023
-Last update: March 2026
+Development started: December 2023  
+Last update: April 2026
 
