@@ -1,6 +1,6 @@
 # Conditioning Cage v2.0
 
-Control software and firmware for a classical fear-conditioning cage.  
+Hardware, control software and firmware for a classical fear-conditioning cage.  
 Arduino DUE stimulus generator with a Python/PyQt5 desktop interface.
 
 **Status: active development**
@@ -58,8 +58,8 @@ RAM cost of the new buffer: 32 x 32 = 1024 uint16_t = 2 KB, compared to 32 KB fo
 Three fully independent stimuli with individual onset and duration per trial:
 
 - **SOUND** — DAC1, AM-modulated sine, pure sine, or square wave. Carrier 0-20 kHz, modulator 0-500 Hz.
+- **LIGHT** — pin 45, square wave 50% duty cycle, configurable frequency. `light_freq = 9999` drives the pin permanently HIGH (DC).
 - **SHOCK** — 8 bar pins, round-robin, configurable pulse HIGH/LOW timing (ms).
-- **LED** — pin 45, square wave 50% duty cycle, configurable frequency. `led_freq = 9999` drives the pin permanently HIGH (DC).
 
 ### Trial structure
 
@@ -80,7 +80,7 @@ pulse_high, pulse_low, onset_led, led_duration, led_freq
 - Recorded trials table with per-row delete
 - Timeline infographic: block diagram of all trials on a shared time axis, with a real-time progress line during experiment execution
 - Protocol save/load (semicolon-delimited .txt)
-- Calibration dialogs for Sound, LED, and Shock (infinite-duration single trial, stopped by ABORT)
+- Calibration dialogs for Sound, Light, and Shock (infinite-duration single trial, stopped by ABORT)
 - Poll timer paused during experiment to prevent USB interrupt glitch on DAC Timer4 (Native Port)
 - 4-second timeout warning if DUE does not respond after connection
 
@@ -103,7 +103,7 @@ All four sync pins are active HIGH while the corresponding stimulus is active:
 | Pin | Signal |
 |---|---|
 | 50 | SOUND_SYN |
-| 51 | LED_SYN |
+| 51 | Light_SYN |
 | 52 | SHOCK_SYN |
 | 53 | MOD_SYN (square wave at modulator_freq, phase-locked to AM envelope) |
 
@@ -114,7 +114,7 @@ All four sync pins are active HIGH while the corresponding stimulus is active:
 - Arduino DUE
 - USB connection to the Native port (second USB connector on the DUE)
 - 8 shock bar outputs on pins 23, 25, 27, 29, 31, 33, 35, 37
-- LED output on pin 45
+- Light output on pin 45
 - Hardware ABORT button between pin 48 and GND (INPUT_PULLUP, active LOW)
 - Recommended: AC coupling capacitor (10 uF) in series on DAC1 output to prevent DC offset at speaker
 
