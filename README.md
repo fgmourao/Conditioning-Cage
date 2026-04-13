@@ -3,7 +3,7 @@
 Hardware, control software and firmware for a classical fear-conditioning cage.  
 Arduino DUE stimulus generator with a Python/PyQt5 desktop interface.
 
-**Status: active development**
+** under development**
 
 ---
 
