@@ -3,7 +3,7 @@
 Hardware, control software and firmware for a classical fear-conditioning cage.  
 Arduino DUE stimulus generator with a Python/PyQt5 desktop interface.
 
-** under development**
+**under development**
 
 ---
 
@@ -58,7 +58,7 @@ RAM cost of the new buffer: 32 x 32 = 1024 uint16_t = 2 KB, compared to 32 KB fo
 Three fully independent stimuli with individual onset and duration per trial:
 
 - **SOUND** — DAC1, AM-modulated sine, pure sine, or square wave. Carrier 0-20 kHz, modulator 0-500 Hz.
-- **LIGHT** — pin 45, square wave 50% duty cycle, configurable frequency. `light_freq = 9999` drives the pin permanently HIGH (DC).
+- **LIGHT** — pin 45, square wave 50% duty cycle, configurable frequency.
 - **SHOCK** — 8 bar pins, round-robin, configurable pulse HIGH/LOW timing (ms).
 
 ### Trial structure
@@ -68,7 +68,7 @@ Each trial stores 15 float parameters:
 ```
 baseline, silence, onset_sound, sound_duration, carrier_freq,
 modulator_freq, volume, waveform_type, onset_shock, shock_duration,
-pulse_high, pulse_low, onset_led, led_duration, led_freq
+pulse_high, pulse_low, onset_light, light_duration, light_freq
 ```
 
 `baseline` is a new field absent in v1.0. It defines a quiet period at the start of the session before the first trial begins, without counting as an inter-trial interval.
@@ -103,7 +103,7 @@ All four sync pins are active HIGH while the corresponding stimulus is active:
 | Pin | Signal |
 |---|---|
 | 50 | SOUND_SYN |
-| 51 | Light_SYN |
+| 51 | LIGHT_SYN |
 | 52 | SHOCK_SYN |
 | 53 | MOD_SYN (square wave at modulator_freq, phase-locked to AM envelope) |
 
