@@ -1,0 +1,3934 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "b12a7b47-681d-41a2-a34f-e01410dcb605")
+	(paper "A4")
+	(lib_symbols
+		(symbol "NNC_ShockBoard-rescue:Bar_Hole"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at -7.112 -1.27 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(property "Value" "Bar_Hole"
+				(at -7.112 1.27 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "Bar_Hole_0_1"
+				(circle
+					(center 0 0)
+					(radius 1.27)
+					(stroke
+						(width 1.4986)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "Bar_Hole_1_1"
+				(pin input line
+					(at 5.08 0 180)
+					(length 5.08)
+					(name "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "NNC_ShockBoard-rescue:CONN_01X08"
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "P"
+				(at 0 11.43 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "CONN_01X08"
+				(at 2.54 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "Pin_Header_Straight_1X08 Pin_Header_Angled_1X08 Socket_Strip_Straight_1X08 Socket_Strip_Angled_1X08"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "CONN_01X08_0_1"
+				(rectangle
+					(start -1.27 9.017)
+					(end 0.254 8.763)
+					(stroke
+						(width 0)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 6.477)
+					(end 0.254 6.223)
+					(stroke
+						(width 0)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 3.937)
+					(end 0.254 3.683)
+					(stroke
+						(width 0)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 1.397)
+					(end 0.254 1.143)
+					(stroke
+						(width 0)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 -1.143)
+					(end 0.254 -1.397)
+					(stroke
+						(width 0)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 -3.683)
+					(end 0.254 -3.937)
+					(stroke
+						(width 0)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 -6.223)
+					(end 0.254 -6.477)
+					(stroke
+						(width 0)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 -8.763)
+					(end 0.254 -9.017)
+					(stroke
+						(width 0)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 -10.16)
+					(end 1.27 10.16)
+					(stroke
+						(width 0)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "CONN_01X08_1_1"
+				(pin passive line
+					(at -5.08 8.89 0)
+					(length 3.81)
+					(name "P1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 6.35 0)
+					(length 3.81)
+					(name "P2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 3.81 0)
+					(length 3.81)
+					(name "P3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 1.27 0)
+					(length 3.81)
+					(name "P4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -1.27 0)
+					(length 3.81)
+					(name "P5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -3.81 0)
+					(length 3.81)
+					(name "P6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -6.35 0)
+					(length 3.81)
+					(name "P7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -8.89 0)
+					(length 3.81)
+					(name "P8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+	)
+	(text "Conditioning Chamber"
+		(exclude_from_sim no)
+		(at 187.198 190.246 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "3b3b5057-1390-4589-a938-03236f539fd1")
+	)
+	(text "Bars Mounting Holes"
+		(exclude_from_sim no)
+		(at 162.433 23.876 0)
+		(effects
+			(font
+				(size 2.9972 2.9972)
+				(italic yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "b8c5b829-001e-4e58-a7cc-29578dc7b535")
+	)
+	(text "Input - Control Signals (Bars)"
+		(exclude_from_sim no)
+		(at 69.977 35.052 0)
+		(effects
+			(font
+				(size 2.9972 2.9972)
+				(italic yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "f7a3e79c-3289-41fc-abe1-45d24f52fb37")
+	)
+	(junction
+		(at 177.8 44.45)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "03f37fd9-a31e-4945-8129-e3d2eed7fd96")
+	)
+	(junction
+		(at 177.8 49.53)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "0d5e6f3a-7d2c-4fec-b841-2d7f757a7256")
+	)
+	(junction
+		(at 231.14 133.35)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "2367917a-0bad-4ab2-8040-488d4345a807")
+	)
+	(junction
+		(at 177.8 143.51)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "29e43bb2-9f16-4d62-9e64-45765a823279")
+	)
+	(junction
+		(at 231.14 44.45)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "2cfc4d68-2f2a-45d9-8728-5a1947812009")
+	)
+	(junction
+		(at 177.8 80.01)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "3e90abcd-7716-4ff3-bd99-1e713f8ea185")
+	)
+	(junction
+		(at 177.8 138.43)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "44e8a5e6-c29e-4d9c-910f-e8140338be59")
+	)
+	(junction
+		(at 231.14 138.43)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "52a8cac3-8d30-4722-a5ea-1d97c1832e45")
+	)
+	(junction
+		(at 231.14 101.6)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "5e36598b-291d-4f82-b47b-0563c34fcb31")
+	)
+	(junction
+		(at 177.8 74.93)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "60c63896-b123-421b-ae97-ea633e3578f7")
+	)
+	(junction
+		(at 231.14 80.01)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "78e7719a-b64a-4180-89de-a2b6bd004dd7")
+	)
+	(junction
+		(at 177.8 111.76)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "7ab0a01c-02b8-4b1f-b5c8-ade3c4fb2baa")
+	)
+	(junction
+		(at 177.8 133.35)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "8d1b11b4-1a1e-48cc-8773-fb895dd25128")
+	)
+	(junction
+		(at 231.14 74.93)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "90f631e3-e34c-44ac-a335-793a311c3ce0")
+	)
+	(junction
+		(at 231.14 69.85)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "93ec17ab-2c48-49ab-b099-c71ec9d3ca34")
+	)
+	(junction
+		(at 177.8 39.37)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "a91325eb-1283-4d23-bc62-8a9d6db045c8")
+	)
+	(junction
+		(at 177.8 69.85)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "aa3a7f6d-0ce9-4ccd-b635-b1f5099d00c5")
+	)
+	(junction
+		(at 231.14 106.68)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "ad437247-25ed-4a11-b502-8b665abf7c11")
+	)
+	(junction
+		(at 231.14 111.76)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "b08e5293-679c-40a1-846f-a06feee84c4a")
+	)
+	(junction
+		(at 177.8 106.68)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "b893f001-2c7c-4996-adbc-29ed0b8118cd")
+	)
+	(junction
+		(at 231.14 143.51)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "bf2a8792-9d8d-46fe-871d-704bf7baca9b")
+	)
+	(junction
+		(at 231.14 39.37)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "d41d7714-4ee0-4873-9508-5b50d0bd8a59")
+	)
+	(junction
+		(at 231.14 49.53)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "f5178c65-0e61-4bc3-bbbf-05ba786b777f")
+	)
+	(junction
+		(at 177.8 101.6)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "fe4871a2-0de4-4d9a-a1fa-a9390caa8ed1")
+	)
+	(wire
+		(pts
+			(xy 231.14 111.76) (xy 231.14 116.84)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "02d84322-94b5-4dc6-92fc-b4d0c4428773")
+	)
+	(wire
+		(pts
+			(xy 99.06 81.28) (xy 104.394 81.28)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "04b00709-24af-4fd0-83ce-6f637e7891ae")
+	)
+	(wire
+		(pts
+			(xy 229.87 133.35) (xy 231.14 133.35)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "05f59b7d-c70f-43ef-9883-248a609cdfe9")
+	)
+	(wire
+		(pts
+			(xy 176.53 138.43) (xy 177.8 138.43)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "07921232-62df-4903-bf77-2921650dce8e")
+	)
+	(wire
+		(pts
+			(xy 99.06 83.82) (xy 104.394 83.82)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0868bae9-697e-419d-bf3f-e7b14009902e")
+	)
+	(wire
+		(pts
+			(xy 229.87 138.43) (xy 231.14 138.43)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0b78a411-1c09-44fc-be30-565721284ead")
+	)
+	(wire
+		(pts
+			(xy 229.87 85.09) (xy 231.14 85.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "11b5a45f-7897-4b3a-985c-c7985b1a6a50")
+	)
+	(wire
+		(pts
+			(xy 231.14 60.96) (xy 231.14 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1525fdc3-176e-481b-9ee1-5dd986c6256d")
+	)
+	(wire
+		(pts
+			(xy 176.53 101.6) (xy 177.8 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "15ef74de-b789-4e0c-9c94-222b2545a246")
+	)
+	(wire
+		(pts
+			(xy 100.076 60.96) (xy 105.41 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "16979205-84cc-4778-a982-80cc14c26350")
+	)
+	(wire
+		(pts
+			(xy 231.14 133.35) (xy 231.14 138.43)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1c22e6fa-e208-4064-bce0-46f6c387d0ce")
+	)
+	(wire
+		(pts
+			(xy 177.8 39.37) (xy 177.8 44.45)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1fab79f7-fa01-413c-9678-ce573aab6f92")
+	)
+	(wire
+		(pts
+			(xy 176.53 80.01) (xy 177.8 80.01)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "202d89b8-88b8-4cca-9e52-8d65d63e333b")
+	)
+	(wire
+		(pts
+			(xy 176.53 74.93) (xy 177.8 74.93)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "22b552b2-b9c0-4ad4-bec2-a6a6dc876448")
+	)
+	(wire
+		(pts
+			(xy 100.076 53.34) (xy 105.41 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "23a13196-5d73-4fd6-bd6f-c6cf8f61b42a")
+	)
+	(wire
+		(pts
+			(xy 177.8 39.37) (xy 184.15 39.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "25d74671-6031-437d-9442-14c9b6be756e")
+	)
+	(wire
+		(pts
+			(xy 177.8 30.48) (xy 177.8 39.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "27aa192d-b9f8-43d8-801e-1578144fdcbd")
+	)
+	(wire
+		(pts
+			(xy 176.53 143.51) (xy 177.8 143.51)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "283e6e8f-ebc9-4958-a7cc-6a5092d9a64c")
+	)
+	(wire
+		(pts
+			(xy 229.87 74.93) (xy 231.14 74.93)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2919497c-20c4-433a-930a-d4887a108d41")
+	)
+	(wire
+		(pts
+			(xy 100.076 43.18) (xy 105.41 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2a2ccd79-4785-4f50-9fe3-d8ff95610bdd")
+	)
+	(wire
+		(pts
+			(xy 176.53 133.35) (xy 177.8 133.35)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2d497401-8c5f-4486-ba8e-8d05da5298bb")
+	)
+	(wire
+		(pts
+			(xy 176.53 54.61) (xy 177.8 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2feb67ac-bae3-42da-8ed4-5cc49eab64c7")
+	)
+	(wire
+		(pts
+			(xy 176.53 69.85) (xy 177.8 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "33904279-a44b-4933-b939-f2a0ed969b2b")
+	)
+	(wire
+		(pts
+			(xy 177.8 106.68) (xy 177.8 111.76)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3709917c-8f66-426b-8699-e74b88d80e92")
+	)
+	(wire
+		(pts
+			(xy 231.14 93.98) (xy 231.14 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3966b5c2-01f9-46e6-ad8a-2da4b8d6c7fe")
+	)
+	(wire
+		(pts
+			(xy 100.076 48.26) (xy 105.41 48.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3c685535-f319-4188-b403-f597830131e9")
+	)
+	(wire
+		(pts
+			(xy 176.53 49.53) (xy 177.8 49.53)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3ec8c4d7-f854-4963-b460-5216d5f980a2")
+	)
+	(wire
+		(pts
+			(xy 177.8 143.51) (xy 177.8 148.59)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3fc59dc9-0f7c-4f23-a770-0bdbc6fb8e88")
+	)
+	(wire
+		(pts
+			(xy 177.8 74.93) (xy 177.8 80.01)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "43987fa6-8e29-4aad-b750-8e23d4aa9faf")
+	)
+	(wire
+		(pts
+			(xy 99.06 88.9) (xy 104.394 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4571e712-20e7-4d72-8d41-505ba780f8c0")
+	)
+	(wire
+		(pts
+			(xy 177.8 111.76) (xy 177.8 116.84)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "47272da3-5916-4fa1-8268-a122b11a67ef")
+	)
+	(wire
+		(pts
+			(xy 231.14 101.6) (xy 231.14 106.68)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4b4da25d-4da9-4aaf-8426-87d983c66389")
+	)
+	(wire
+		(pts
+			(xy 176.53 116.84) (xy 177.8 116.84)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4bf2091b-16a5-4cda-9362-d400c0bcfc46")
+	)
+	(wire
+		(pts
+			(xy 231.14 138.43) (xy 231.14 143.51)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "533f5a00-a872-4d98-a16a-e61951a6fc6f")
+	)
+	(wire
+		(pts
+			(xy 229.87 54.61) (xy 231.14 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5699f5b1-6d49-44ea-9fc4-9072bc98309b")
+	)
+	(wire
+		(pts
+			(xy 231.14 44.45) (xy 231.14 49.53)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5b011a5e-c60f-4ed6-98d6-478611aedef1")
+	)
+	(wire
+		(pts
+			(xy 177.8 92.71) (xy 177.8 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5ddfe7b3-6a80-49a8-b743-d7004bfed0f1")
+	)
+	(wire
+		(pts
+			(xy 100.076 55.88) (xy 105.41 55.88)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "63d5b1e1-6f02-4fca-9ad2-0cdd9d653315")
+	)
+	(wire
+		(pts
+			(xy 176.53 44.45) (xy 177.8 44.45)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "68932fe0-b021-47e4-b9b4-a63bf679fabe")
+	)
+	(wire
+		(pts
+			(xy 99.06 78.74) (xy 104.394 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6c15de9c-86b9-403a-bf43-d305af4d6604")
+	)
+	(wire
+		(pts
+			(xy 231.14 39.37) (xy 231.14 44.45)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "70c93759-e2fc-48a0-b187-44eb4e8cb52c")
+	)
+	(wire
+		(pts
+			(xy 100.076 45.72) (xy 105.41 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7765a1d0-6ed7-4249-ad6a-0fef5ec8f903")
+	)
+	(wire
+		(pts
+			(xy 231.14 74.93) (xy 231.14 80.01)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "781e1248-b299-45a1-a21b-5a62609a6857")
+	)
+	(wire
+		(pts
+			(xy 231.14 143.51) (xy 231.14 148.59)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7c66cf19-1592-486d-93a1-cdb6a12065e3")
+	)
+	(wire
+		(pts
+			(xy 177.8 44.45) (xy 177.8 49.53)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7de66165-084e-4cbe-bbe8-2c8df83f4c47")
+	)
+	(wire
+		(pts
+			(xy 176.53 106.68) (xy 177.8 106.68)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7e0c31f8-ada1-406f-9cd9-21374f62c474")
+	)
+	(wire
+		(pts
+			(xy 231.14 31.75) (xy 231.14 39.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7f303628-b6d1-42e8-a447-adda90baaf29")
+	)
+	(wire
+		(pts
+			(xy 177.8 125.73) (xy 177.8 133.35)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7ff8c415-42d8-4d2a-9876-7c0571655d41")
+	)
+	(wire
+		(pts
+			(xy 231.14 124.46) (xy 231.14 133.35)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8b33bbeb-eea0-4d54-b186-192e3f14464c")
+	)
+	(wire
+		(pts
+			(xy 231.14 69.85) (xy 231.14 74.93)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8dc3ae16-6894-454b-8685-172876a710fa")
+	)
+	(wire
+		(pts
+			(xy 99.06 96.52) (xy 104.394 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9007b046-7c5b-4ddc-a892-991ccdb73fae")
+	)
+	(wire
+		(pts
+			(xy 231.14 106.68) (xy 231.14 111.76)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "90313bdf-18a4-47a5-9d75-1f5135f1c3af")
+	)
+	(wire
+		(pts
+			(xy 177.8 133.35) (xy 177.8 138.43)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9b4d021e-2a1d-4c07-85d3-080943444c15")
+	)
+	(wire
+		(pts
+			(xy 99.06 86.36) (xy 104.394 86.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9b793cd9-bbe5-46b3-8198-62dea869f60b")
+	)
+	(wire
+		(pts
+			(xy 231.14 69.85) (xy 237.49 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9b8d87cf-2a50-47ab-b394-00984793a1cd")
+	)
+	(wire
+		(pts
+			(xy 229.87 39.37) (xy 231.14 39.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9ecdbfce-776b-4c19-8e77-074d2739224a")
+	)
+	(wire
+		(pts
+			(xy 231.14 49.53) (xy 231.14 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9f77062e-fad1-43df-a814-f67c3785aff7")
+	)
+	(wire
+		(pts
+			(xy 229.87 111.76) (xy 231.14 111.76)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9f9c0368-275e-4fe9-b431-529a66852f96")
+	)
+	(wire
+		(pts
+			(xy 177.8 69.85) (xy 184.15 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9ff6ddc1-a0f6-441e-8722-d447fc3d704d")
+	)
+	(wire
+		(pts
+			(xy 177.8 133.35) (xy 184.15 133.35)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a2ef0bd9-6c27-4695-96d4-39553bfc2d97")
+	)
+	(wire
+		(pts
+			(xy 229.87 49.53) (xy 231.14 49.53)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a79a5118-e6df-40e9-b770-d29537be7cd7")
+	)
+	(wire
+		(pts
+			(xy 176.53 111.76) (xy 177.8 111.76)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a8934909-43ba-47d4-b8e8-8aa5ab763545")
+	)
+	(wire
+		(pts
+			(xy 231.14 101.6) (xy 237.49 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a9cded92-f483-49c7-8f47-71749daf4c59")
+	)
+	(wire
+		(pts
+			(xy 229.87 44.45) (xy 231.14 44.45)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "acd41312-cb1e-46bc-abb4-ab1a14d5b7ed")
+	)
+	(wire
+		(pts
+			(xy 231.14 133.35) (xy 237.49 133.35)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "acd47839-662e-4517-b713-9238033f77d8")
+	)
+	(wire
+		(pts
+			(xy 177.8 101.6) (xy 184.15 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ae48a50b-29ef-4a53-813b-bfbc09c13d07")
+	)
+	(wire
+		(pts
+			(xy 177.8 62.23) (xy 177.8 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b0eac635-f84f-40bf-b962-d807689fdda3")
+	)
+	(wire
+		(pts
+			(xy 100.076 58.42) (xy 105.41 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b1f6891b-c2da-4015-bb7b-59ded06dfef5")
+	)
+	(wire
+		(pts
+			(xy 229.87 101.6) (xy 231.14 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bb16eabd-6f59-453a-9d73-942a1611825e")
+	)
+	(wire
+		(pts
+			(xy 231.14 80.01) (xy 231.14 85.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bcf75dea-0917-4dfc-ac42-06bb5023dbdf")
+	)
+	(wire
+		(pts
+			(xy 177.8 69.85) (xy 177.8 74.93)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c20b6936-2a72-44f7-91af-36a5e36913bd")
+	)
+	(wire
+		(pts
+			(xy 177.8 138.43) (xy 177.8 143.51)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c4afe304-15c7-4002-be4c-aacbf93b90d5")
+	)
+	(wire
+		(pts
+			(xy 176.53 39.37) (xy 177.8 39.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c89f459d-1189-4eaf-b12b-e14f2f1632c1")
+	)
+	(wire
+		(pts
+			(xy 229.87 148.59) (xy 231.14 148.59)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c8ebd765-3004-4162-8a22-ac56fe8c6df9")
+	)
+	(wire
+		(pts
+			(xy 229.87 143.51) (xy 231.14 143.51)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ca23c264-9b68-4453-9efb-5a713224f444")
+	)
+	(wire
+		(pts
+			(xy 229.87 80.01) (xy 231.14 80.01)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d109f9ac-31e8-4e19-b604-0d13c0b5e38c")
+	)
+	(wire
+		(pts
+			(xy 176.53 148.59) (xy 177.8 148.59)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d83e7512-b855-49ef-b8ef-3b077781c457")
+	)
+	(wire
+		(pts
+			(xy 176.53 85.09) (xy 177.8 85.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d9231e64-5610-44e0-a067-9d92625ded54")
+	)
+	(wire
+		(pts
+			(xy 229.87 116.84) (xy 231.14 116.84)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e119673f-8412-4468-b592-887cde4ee69c")
+	)
+	(wire
+		(pts
+			(xy 229.87 106.68) (xy 231.14 106.68)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e2bea858-804e-4316-97a4-14d2c67a8c0a")
+	)
+	(wire
+		(pts
+			(xy 177.8 49.53) (xy 177.8 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e547dcb4-eb19-4959-9c44-065bcc2669d0")
+	)
+	(wire
+		(pts
+			(xy 100.076 50.8) (xy 105.41 50.8)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "eba3e89a-a878-435c-9abd-aacfd9180790")
+	)
+	(wire
+		(pts
+			(xy 99.06 91.44) (xy 104.394 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ed85f59c-ab28-402e-9825-e81f638bd417")
+	)
+	(wire
+		(pts
+			(xy 177.8 80.01) (xy 177.8 85.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f451278f-afa5-484d-98b5-24c957496cab")
+	)
+	(wire
+		(pts
+			(xy 231.14 39.37) (xy 237.49 39.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f7b907db-77f2-4839-bf92-10c86d52882f")
+	)
+	(wire
+		(pts
+			(xy 229.87 69.85) (xy 231.14 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f9be1aff-34dd-4c29-b47e-2259577f5cd7")
+	)
+	(wire
+		(pts
+			(xy 177.8 101.6) (xy 177.8 106.68)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fa8c9729-e493-42cf-962c-640949a44e9c")
+	)
+	(wire
+		(pts
+			(xy 99.06 93.98) (xy 104.394 93.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fc713097-10d7-4f9d-9398-56535665e8bd")
+	)
+	(label "InBarra8"
+		(at 231.14 124.46 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "00c4605f-9f15-4c2c-ad94-18bc6d4c9ee6")
+	)
+	(label "InBarra6"
+		(at 231.14 60.96 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "1573b705-d25a-42f3-8661-30aab26d6bce")
+	)
+	(label "OutBarra2"
+		(at 104.394 81.28 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "17d1e183-9af9-4fb3-80ed-a9f4e11ab201")
+	)
+	(label "InBarra2"
+		(at 105.41 45.72 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "17fa6446-6318-49c9-a402-be76acea7e21")
+	)
+	(label "OutBarra8"
+		(at 104.394 96.52 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "378184d1-2726-4682-9914-5eda0bbddc1b")
+	)
+	(label "OutBarra8"
+		(at 237.49 133.35 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "3d51117b-34d5-47e5-ac99-4bae3d6c852c")
+	)
+	(label "InBarra4"
+		(at 177.8 125.73 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "49f218ad-4de1-4780-b31a-07c6f3ed251c")
+	)
+	(label "OutBarra4"
+		(at 184.15 133.35 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "4de84ffc-5d9a-472a-8964-4c176938ddd7")
+	)
+	(label "InBarra8"
+		(at 105.41 60.96 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "4fcacd8a-291e-489e-86c0-f23b60dccbdd")
+	)
+	(label "InBarra4"
+		(at 105.41 50.8 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "59225729-e641-463c-beff-268c39bdd697")
+	)
+	(label "OutBarra1"
+		(at 184.15 39.37 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "66ca05b3-04cd-4bdb-9fd3-3f9138630f28")
+	)
+	(label "InBarra7"
+		(at 231.14 93.98 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "67916d89-dab6-47c0-b356-78f79e9e4aa9")
+	)
+	(label "OutBarra5"
+		(at 104.394 88.9 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "6e70c563-d459-435c-94ce-fba592883f59")
+	)
+	(label "OutBarra3"
+		(at 184.15 101.6 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "6f35d98a-21dc-4bfa-9c75-3f48897df15c")
+	)
+	(label "InBarra7"
+		(at 105.41 58.42 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "6fb3c97a-2cf1-4128-8e45-305f8cf5bdae")
+	)
+	(label "OutBarra7"
+		(at 104.394 93.98 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "81897aee-e600-4d6f-9a6e-e6490e5c93d9")
+	)
+	(label "OutBarra3"
+		(at 104.394 83.82 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "9b0b5a37-ad18-4044-8c39-34a7444e00dc")
+	)
+	(label "InBarra1"
+		(at 105.41 43.18 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "a4108d75-08b2-49d2-b8e0-4122500eb477")
+	)
+	(label "InBarra5"
+		(at 231.14 31.75 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "ab35aaf4-42db-4c2a-a2d0-d8ddce511a5f")
+	)
+	(label "InBarra6"
+		(at 105.41 55.88 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "ae89966e-8463-4e87-b5e1-6a3f21ed98f1")
+	)
+	(label "OutBarra7"
+		(at 237.49 101.6 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "af0f6c67-ee98-4239-ab19-09178606f4fc")
+	)
+	(label "OutBarra4"
+		(at 104.394 86.36 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "bb12def2-b68d-4740-9c05-97e8fe075503")
+	)
+	(label "OutBarra1"
+		(at 104.394 78.74 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "c92193ed-4c0b-4e98-bdc1-2bde7dae22fe")
+	)
+	(label "InBarra1"
+		(at 177.8 30.48 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "ce643d31-a633-401e-ac68-fe9af5786f9e")
+	)
+	(label "InBarra3"
+		(at 105.41 48.26 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "ceae66d9-ddb1-4665-8503-e7659db0d98c")
+	)
+	(label "OutBarra5"
+		(at 237.49 39.37 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "d0f109c8-0342-4df8-b2b3-8ada066c454a")
+	)
+	(label "InBarra2"
+		(at 177.8 62.23 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "d4d90da7-3981-4595-8672-0c5b533596bb")
+	)
+	(label "InBarra3"
+		(at 177.8 92.71 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "e8a9f179-c440-4cb7-995a-481fff5e0009")
+	)
+	(label "OutBarra6"
+		(at 237.49 69.85 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "f06121d5-a0b5-4e8f-a9e4-872c26a193ff")
+	)
+	(label "InBarra5"
+		(at 105.41 53.34 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "f918d987-cb15-403d-b501-c7cd6b772196")
+	)
+	(label "OutBarra2"
+		(at 184.15 69.85 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "f9f8fa12-fc98-4a55-b754-1d322ef10530")
+	)
+	(label "OutBarra6"
+		(at 104.394 91.44 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+			)
+			(justify left bottom)
+		)
+		(uuid "ff30ba92-c42b-45fe-9832-afec40a7c086")
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:CONN_01X08")
+		(at 94.996 52.07 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "00000000-0000-0000-0000-0000574972b4")
+		(property "Reference" "P2"
+			(at 94.996 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "CONN_01X08"
+			(at 92.456 52.07 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Pin_Headers:Pin_Header_Straight_2x04"
+			(at 104.267 39.497 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 94.996 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 94.996 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "cafe72f7-bf47-4d71-8ddd-838ad0414385")
+		)
+		(pin "2"
+			(uuid "5571f549-cce3-478b-bff5-1968225ac6e0")
+		)
+		(pin "3"
+			(uuid "67036d7f-f0c9-4099-bba8-e4725bb55ed9")
+		)
+		(pin "4"
+			(uuid "7147f8a6-7d30-4bfc-86c4-0613ca3c70df")
+		)
+		(pin "5"
+			(uuid "bb6752ba-7eb3-4dbb-8809-0d8415f94ced")
+		)
+		(pin "6"
+			(uuid "6fa2e9c4-c5e7-434f-a8c0-ad5106b565a1")
+		)
+		(pin "7"
+			(uuid "3181ede3-2cf6-4422-9b23-5d1b6b93eda9")
+		)
+		(pin "8"
+			(uuid "cbefae31-b798-4d7d-9c0b-f7d32c61af8b")
+		)
+		(instances
+			(project ""
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "P2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 171.45 39.37 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "00000000-0000-0000-0000-000057d87d67")
+		(property "Reference" "U1-1"
+			(at 164.338 40.64 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 164.338 38.1 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 171.45 39.37 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 171.45 39.37 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 171.45 39.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "bd77eaf1-4823-4aa5-bc0a-cce1e62deec2")
+		)
+		(instances
+			(project ""
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U1-1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 171.45 44.45 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "00000000-0000-0000-0000-000057ed5633")
+		(property "Reference" "U1-2"
+			(at 164.338 45.72 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 164.338 43.18 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 171.45 44.45 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 171.45 44.45 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 171.45 44.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "cb1bf223-d105-42bf-9500-590a9f4cd4eb")
+		)
+		(instances
+			(project ""
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U1-2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 224.79 80.01 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "07f69f28-8be6-4563-adb7-ff1cfc8b9a24")
+		(property "Reference" "U6-3"
+			(at 217.678 81.28 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 217.678 78.74 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 224.79 80.01 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 224.79 80.01 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 224.79 80.01 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "6d67c7b9-7371-4153-8618-33d909f68fbc")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U6-3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 171.45 111.76 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "16162d39-d506-45bc-88c3-697f602e55d1")
+		(property "Reference" "U3-3"
+			(at 164.338 113.03 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 164.338 110.49 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 171.45 111.76 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 171.45 111.76 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 171.45 111.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "0c5e13c1-ebd5-4f01-85cb-0f542541af9d")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U3-3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 171.45 54.61 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "24efcf35-f465-46b4-a428-0aff2df7e12c")
+		(property "Reference" "U1-4"
+			(at 164.338 55.88 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 164.338 53.34 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 171.45 54.61 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 171.45 54.61 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 171.45 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "85650b76-86da-4d55-9fc2-709b0cb27bf7")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U1-4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 171.45 148.59 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2db359d1-1d61-46df-b43d-0233ea2332c5")
+		(property "Reference" "U4-4"
+			(at 164.338 149.86 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 164.338 147.32 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 171.45 148.59 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 171.45 148.59 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 171.45 148.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "322f71e3-a0cb-4bb9-bcdc-ab39e8fb038f")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U4-4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 224.79 85.09 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "319bf798-33e5-4b1a-959b-915c498d9e43")
+		(property "Reference" "U6-4"
+			(at 217.678 86.36 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 217.678 83.82 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 224.79 85.09 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 224.79 85.09 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 224.79 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "1f813b5c-134f-4aca-bf0a-11d88de5eb52")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U6-4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 171.45 49.53 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "32e225c3-d76c-4d3e-851d-04824a0d4d02")
+		(property "Reference" "U1-3"
+			(at 164.338 50.8 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 164.338 48.26 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 171.45 49.53 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 171.45 49.53 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 171.45 49.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "a7ef7d99-d226-4d37-a162-df2459289590")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U1-3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 171.45 138.43 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3c46991b-447a-4216-aeb1-cf053ba98a8c")
+		(property "Reference" "U4-2"
+			(at 164.338 139.7 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 164.338 137.16 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 171.45 138.43 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 171.45 138.43 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 171.45 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "529f67ca-5f25-4b3e-8df1-6fcf7c75ac35")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U4-2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 224.79 143.51 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "477364a1-fa06-49f2-b1f6-d8547f7d7056")
+		(property "Reference" "U8-3"
+			(at 217.678 144.78 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 217.678 142.24 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 224.79 143.51 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 224.79 143.51 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 224.79 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "b559c2bd-eb7b-4d11-940b-89ebbec1a28b")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U8-3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 171.45 85.09 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "510ebc8b-22be-4fd5-944b-0a86b9be737f")
+		(property "Reference" "U2-4"
+			(at 164.338 86.36 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 164.338 83.82 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 171.45 85.09 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 171.45 85.09 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 171.45 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "15c31d6a-11c3-495a-a791-589b995f1817")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U2-4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 224.79 69.85 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "516a206a-8ec4-49bf-9908-83d750556061")
+		(property "Reference" "U6-1"
+			(at 217.678 71.12 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 217.678 68.58 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 224.79 69.85 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 224.79 69.85 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 224.79 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "0a4e04b6-7391-4553-a46b-bbdb199e76e3")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U6-1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 171.45 69.85 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5261e95a-a996-4d7d-8166-1a7e210b5994")
+		(property "Reference" "U2-1"
+			(at 164.338 71.12 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 164.338 68.58 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 171.45 69.85 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 171.45 69.85 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 171.45 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "44784e3f-042c-47e7-9d38-a64dd2bafd29")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U2-1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 224.79 111.76 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7014960c-829f-449e-9fd6-19d8bc3709f8")
+		(property "Reference" "U7-3"
+			(at 217.678 113.03 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 217.678 110.49 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 224.79 111.76 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 224.79 111.76 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 224.79 111.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "278d9b1d-80c4-4d37-8c66-3f9bbe4dac4f")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U7-3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 224.79 101.6 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "896f6d5e-79a1-4113-9a34-beb9b814d264")
+		(property "Reference" "U7-1"
+			(at 217.678 102.87 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 217.678 100.33 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 224.79 101.6 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 224.79 101.6 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 224.79 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "3e369269-8743-453d-92f2-1e43176f70b7")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U7-1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 224.79 49.53 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8c601390-540d-499d-aa36-488505e5e942")
+		(property "Reference" "U5-3"
+			(at 217.678 50.8 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 217.678 48.26 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 224.79 49.53 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 224.79 49.53 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 224.79 49.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "f7c8a527-8d59-4f26-9165-ac08fd2b4d2f")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U5-3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 171.45 80.01 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8d62192b-6eac-42ac-af7d-447575f10da6")
+		(property "Reference" "U2-3"
+			(at 164.338 81.28 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 164.338 78.74 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 171.45 80.01 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 171.45 80.01 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 171.45 80.01 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "25a69a30-65f5-484b-b786-2a782918f0dc")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U2-3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 224.79 39.37 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "904eb0a1-8e2a-4fef-9524-fad93370c29b")
+		(property "Reference" "U5-1"
+			(at 217.678 40.64 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 217.678 38.1 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 224.79 39.37 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 224.79 39.37 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 224.79 39.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "91265e36-d087-471c-a9eb-1f0ff526862e")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U5-1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 171.45 74.93 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "9390fa34-c1fa-4c2c-8141-b6a9afe70303")
+		(property "Reference" "U2-2"
+			(at 164.338 76.2 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 164.338 73.66 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 171.45 74.93 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 171.45 74.93 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 171.45 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "b0b379a5-ed29-49ce-9626-66a65422c808")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U2-2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 224.79 148.59 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "959c7305-056e-4581-98f6-a1aebc608ec6")
+		(property "Reference" "U8-4"
+			(at 217.678 149.86 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 217.678 147.32 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 224.79 148.59 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 224.79 148.59 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 224.79 148.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "aa9100b3-7565-489d-bda3-0a06e416ee3a")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U8-4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 224.79 116.84 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "9cc4901c-7f58-4f59-85d5-cb1906f7bbf0")
+		(property "Reference" "U7-4"
+			(at 217.678 118.11 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 217.678 115.57 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 224.79 116.84 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 224.79 116.84 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 224.79 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "f912494c-a1b4-47ef-b8b8-5490a6284478")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U7-4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 224.79 54.61 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "9dc28080-9850-46f3-8d7a-b3a6727750cf")
+		(property "Reference" "U5-4"
+			(at 217.678 55.88 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 217.678 53.34 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 224.79 54.61 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 224.79 54.61 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 224.79 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "3fba133d-1f52-4e8a-ad03-eded7c53e20f")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U5-4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 171.45 116.84 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a2f8e0a0-25f6-4657-9a68-e597a8349a99")
+		(property "Reference" "U3-4"
+			(at 164.338 118.11 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 164.338 115.57 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 171.45 116.84 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 171.45 116.84 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 171.45 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "abfd8a29-004b-4162-8e7d-20e71b168378")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U3-4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 171.45 101.6 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a31379e4-8d7d-4cce-ab3d-e451821cf17d")
+		(property "Reference" "U3-1"
+			(at 164.338 102.87 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 164.338 100.33 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 171.45 101.6 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 171.45 101.6 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 171.45 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "7dbe355d-ed36-4c66-997f-7ee951a918ff")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U3-1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 171.45 143.51 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b33ea636-7635-414e-b974-8b80a6384ac9")
+		(property "Reference" "U4-3"
+			(at 164.338 144.78 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 164.338 142.24 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 171.45 143.51 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 171.45 143.51 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 171.45 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "c0805a8b-5983-4dae-8f78-5cc36743af57")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U4-3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:CONN_01X08")
+		(at 93.98 87.63 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b5b5b005-8f6b-4d69-a9de-21d64cdb4451")
+		(property "Reference" "P1"
+			(at 93.98 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "CONN_01X08"
+			(at 91.44 87.63 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Pin_Headers:Pin_Header_Straight_2x04"
+			(at 103.251 75.057 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 93.98 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 93.98 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "a7115e3b-c7b6-4142-a410-894881fc4f08")
+		)
+		(pin "2"
+			(uuid "556603ee-19c3-4c4d-95dd-1894b7a38cc5")
+		)
+		(pin "3"
+			(uuid "f42dd70a-4cd7-41a3-97bd-d84e2b1ddc95")
+		)
+		(pin "4"
+			(uuid "eb46d4cd-5879-4918-a658-9de6e0c2f1bb")
+		)
+		(pin "5"
+			(uuid "e2ac1965-5f56-4a8d-9d24-c3d468a11b7a")
+		)
+		(pin "6"
+			(uuid "ca4f5d39-61f8-490c-bc8f-7f22c89cd3e5")
+		)
+		(pin "7"
+			(uuid "c0c161fa-6823-447b-b5a6-ed479a46ecee")
+		)
+		(pin "8"
+			(uuid "e37f0f21-69f6-42d6-9ead-d17cff451ae3")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "P1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 171.45 133.35 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "bb866a61-a0cf-42b7-bc93-0a7bc7afea14")
+		(property "Reference" "U4-1"
+			(at 164.338 134.62 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 164.338 132.08 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 171.45 133.35 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 171.45 133.35 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 171.45 133.35 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "ee0b0312-a77c-4edc-aa2e-681b2692c669")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U4-1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 224.79 44.45 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "bda081c5-6816-4755-81c9-e651513bf6c9")
+		(property "Reference" "U5-2"
+			(at 217.678 45.72 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 217.678 43.18 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 224.79 44.45 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 224.79 44.45 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 224.79 44.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "0168b106-231a-45c1-9b8f-07fa7288a0f0")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U5-2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 224.79 138.43 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "bf73fd34-a604-4f51-a766-8a0534633ac1")
+		(property "Reference" "U8-2"
+			(at 217.678 139.7 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 217.678 137.16 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 224.79 138.43 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 224.79 138.43 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 224.79 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "18093393-2bf8-47ea-9e14-b1698069c0d0")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U8-2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 171.45 106.68 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e775bd93-777e-409e-af35-c1f55b2574ee")
+		(property "Reference" "U3-2"
+			(at 164.338 107.95 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 164.338 105.41 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 171.45 106.68 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 171.45 106.68 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 171.45 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "bc95ff34-23c4-4f47-9c49-530866163050")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U3-2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 224.79 106.68 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "ee81a838-2b67-489f-b9e6-28c2a3273f53")
+		(property "Reference" "U7-2"
+			(at 217.678 107.95 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 217.678 105.41 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 224.79 106.68 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 224.79 106.68 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 224.79 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "863ace00-bfe9-47fc-bd37-de2e521d0583")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U7-2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 224.79 133.35 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f227e6d5-ea52-45d4-a890-7e74a9af4082")
+		(property "Reference" "U8-1"
+			(at 217.678 134.62 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 217.678 132.08 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 224.79 133.35 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 224.79 133.35 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 224.79 133.35 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "d4a1d3fb-71d9-4262-acb6-b68daa0bce50")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U8-1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NNC_ShockBoard-rescue:Bar_Hole")
+		(at 224.79 74.93 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f63ca697-c180-43a7-86c0-1a0bdb74a7af")
+		(property "Reference" "U6-2"
+			(at 217.678 76.2 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "Bar_Hole"
+			(at 217.678 73.66 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "NNClib:Bar_Hole"
+			(at 224.79 74.93 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 224.79 74.93 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 224.79 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "2c189b27-4d3a-4679-b96f-0b9533cdf3c1")
+		)
+		(instances
+			(project "Shock_circuit"
+				(path "/b12a7b47-681d-41a2-a34f-e01410dcb605"
+					(reference "U6-2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
+)
