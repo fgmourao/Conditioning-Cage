@@ -161,15 +161,14 @@ Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
 
 ## Authors
 
-**v1.0 (2019)**  
-Paulo Aparecido Amaral Junior, Flavio Afonso Goncalves Mourao, Marcio Flavio Dutra Moraes
-Nucleo de Neurociencias, UFMG, Brazil
+**v1.0 (2019)** * **Paulo Aparecido Amaral Junior**, **Flavio Afonso Goncalves Mourao**, **Marcio Flavio Dutra Moraes**
+* *Núcleo de Neurociências, UFMG, Brazil*
 
-**v2.0 (2026)**  
-Flavio Mourao (mourao.fg@gmail.com)  
-CNPq/MCTI/FNDCT Nº 21/2024 - Conhecimento Brasil - Processo: 446467/2024-3   
-Federal University of Minas Gerais, Brazil  
-  
-Development started: December 2023  
-Last update: April 2026
+**v2.0 (2026)** * **Flavio Mourao** ([mourao.fg@gmail.com](mailto:mourao.fg@gmail.com))
+* *CNPq/MCTI/FNDCT Nº 21/2024 - Conhecimento Brasil - Processo: 446467/2024-3*
+* *Federal University of Minas Gerais, Brazil*
+
+---
+* **Development started:** December 2023 
+* **Last update:** April 2026
 
