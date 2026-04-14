@@ -5,17 +5,17 @@
  * Version: 2.0
  *
  * Architecture:
- *   Controlled entirely via the SerialUSB programming port (Python on PC, 115200 baud).
+ *   Controlled entirely via the SerialUSB native port (Python on PC, 115200 baud).
  *   The DUE stores the complete trial list in RAM and executes the experiment
  *   autonomously after receiving a START command. Python manages timing only
  *   at the experiment level (sending parameters and start/abort); all stimulus
  *   onset/offset timing is handled by the DUE using micros() at 500 us resolution.
  *
  * Sound generation (Waveforms.h adaptive lookup tables):
- *   carrier_freq >  10000 Hz: 4-sample table  (DAC Timer4 rate up to  80 kHz)
- *   carrier_freq >   3000 Hz: 8-sample table  (DAC Timer4 rate up to  80 kHz)
- *   carrier_freq >   1000 Hz: 16-sample table (DAC Timer4 rate up to  48 kHz)
- *   carrier_freq <=  1000 Hz: 32-sample table (DAC Timer4 rate up to  32 kHz)
+ *   carrier_freq >  10000 Hz:  4-sample table  (DAC Timer4 rate up to  80 kHz)
+ *   carrier_freq >   3000 Hz:  8-sample table  (DAC Timer4 rate up to  80 kHz)
+ *   carrier_freq >   1000 Hz: 16-sample table  (DAC Timer4 rate up to  48 kHz)
+ *   carrier_freq <=  1000 Hz: 32-sample table  (DAC Timer4 rate up to  32 kHz)
  *   All rates are within the SAM3X8E DAC hardware limit of 1 MHz.
  *   Modulator: fixed 32-sample unipolar [0,1] table. Timer5 rate = modulator_freq x 32.
  *   modulator_freq = 0: pure carrier sine, no AM modulation.
@@ -25,6 +25,15 @@
  *   SOUND -- DAC1, AM sine or pure sine or square wave, Timer4/Timer5
  *   SHOCK -- 8 bar pins round-robin, Timer6 at 10 kHz clock
  *   LIGHT -- pin 45, square wave 50% duty cycle, Timer7
+ *
+ * OLED status display (128x32, SSD1306, I2C address 0x3C):
+ *   Wired to DUE I2C bus: SDA = pin 20, SCL = pin 21.
+ *   Shows experiment state at each transition:
+ *     Startup  : "Conditioning Cage / v2.0  Ready."
+ *     Trial    : "TRIAL X/N / CS"  or  "CS + US"  or  "US"
+ *     Done     : "Conditioning Cage / Done."
+ *     Aborted  : "Conditioning Cage / Aborted."
+ *   Updated in RunTrial() before Timer4 starts -- no audio glitch risk.
  *
  * SerialUSB protocol (115200 baud, newline-terminated JSON):
  *   {"cmd":"ping"}                              -> {"ok":true,"msg":"pong","version":"2.0"}
@@ -44,19 +53,21 @@
  *   pin 52 -- SHOCK_SYN  shock active
  *   pin 53 -- MOD_SYN    square wave at modulator_freq (phase-locked to AM envelope)
  *
- * Other pin assignments:
+ * Pin assignments:
  *   DAC1 -- sound output (12-bit, 0-3.3V)
- *   45   -- Light stimulus output (square wave, 50% duty)
+ *   45   -- light stimulus output (square wave, 50% duty)
  *   46   -- watchdog fault output (HIGH pulse on fault)
  *   48   -- hardware ABORT input (INPUT_PULLUP, active LOW)
- *   13   -- debug light (ON when parameters received OK, OFF after abort)
+ *   13   -- debug LED (ON when parameters received OK, OFF after abort)
+ *   20   -- I2C SDA (OLED display)
+ *   21   -- I2C SCL (OLED display)
  *   23,25,27,29,31,33,35,37 -- shock bar outputs (active HIGH, round-robin)
  *
  * Timer allocation:
  *   Timer4 -- carrier()    ISR: writes DACbuffer samples to DAC1
  *   Timer5 -- modulating() ISR: advances modulator index, drives MOD_SYN
  *   Timer6 -- shockClock() ISR: 10 kHz shock bar timing clock
- *   Timer7 -- lightClock()   ISR: light square wave toggle
+ *   Timer7 -- lightClock() ISR: light square wave toggle
  *
  * Based on Version 1.0 (2019): ESP8266 WiFi master + Arduino DUE SPI slave architecture.
  *   Authors: Paulo Aparecido Amaral Junior, Flavio Afonso Goncalves Mourao, Marcio Flavio Dutra Moraes
@@ -144,53 +155,34 @@ static const int barStep       = 2;
 ############################################################################################################*/
 
 struct Trial {
-  float baseline;
-  // Baseline period before first trial starts (s)
-  float silence;
-  // Inter-trial silence before this trial starts (s)
-  float onset_sound;
-  // Sound onset time within trial (s), relative to trial start
-  float sound_duration;
-  // Sound duration (s)
-  float carrier_freq;     // DAC carrier frequency (Hz), 0 = no sound
-  float modulator_freq;
-  // AM modulator frequency (Hz), 0 = pure sine
-  float volume;           // Sound amplitude (%), 0-100
-  float waveform_type;
-  // 0=SINE_AM, 1=SINE, 2=SQUARE (cast to int in ProgramSound)
-  float onset_shock;
-  // Shock onset time within trial (s)
-  float shock_duration;
-  // Shock duration (s), 0 = no shock
-  float pulse_high;
-  // Shock bar ON time per pulse (ms)
-  float pulse_low;
-  // Shock bar OFF time between pulses (ms)
-  float onset_light;
-  // Light onset time within trial (s)
-  float light_duration;
-  // Light duration (s), 0 = no Light
-  float light_freq;
-  // Light square wave frequency (Hz), 0 = no Light
+  float baseline;        // Baseline period before first trial starts (s)
+  float silence;         // Inter-trial silence before this trial starts (s)
+  float onset_sound;     // Sound onset time within trial (s), relative to trial start
+  float sound_duration;  // Sound duration (s)
+  float carrier_freq;    // DAC carrier frequency (Hz); 0 = no sound
+  float modulator_freq;  // AM modulator frequency (Hz); 0 = pure sine
+  float volume;          // Sound amplitude (%), 0-100
+  float waveform_type;   // 0=SINE_AM, 1=SINE, 2=SQUARE (cast to int in ProgramSound)
+  float onset_shock;     // Shock onset time within trial (s)
+  float shock_duration;  // Shock duration (s); 0 = no shock
+  float pulse_high;      // Shock bar ON time per pulse (ms)
+  float pulse_low;       // Shock bar OFF time between pulses (ms)
+  float onset_light;     // Light onset time within trial (s)
+  float light_duration;  // Light duration (s); 0 = no light
+  float light_freq;      // Light square wave frequency (Hz); 9999 = DC HIGH (constant ON)
 };
 
 // Trial list stored in SRAM.
 // Loaded by handleSerialUSB() on "program" command.
 Trial   trials[MAX_TRIALS];
-int     nTrials      = 0;
-// Number of trials currently programmed
-int     currentTrial = 0;
-// Index of the trial currently executing (0-based)
+int     nTrials      = 0;     // Number of trials currently programmed
+int     currentTrial = 0;     // Index of the trial currently executing (0-based)
 
 // Experiment state flags.
-bool    bReady       = false;
-// True when trial list is loaded and valid
-bool    bRunning     = false;
-// True while RunExperiment() is executing
-bool    bAbort       = false;
-// Set to true to request immediate stop
-bool    bFault       = false;
-// Set to true on watchdog fault; cleared only by new program
+bool    bReady       = false; // True when trial list is loaded and valid
+bool    bRunning     = false; // True while RunExperiment() is executing
+bool    bAbort       = false; // Set to true to request immediate stop
+bool    bFault       = false; // Set to true on watchdog fault; cleared only by new program
 uint8_t status       = ST_IDLE;
 /*############################################################################################################
         Sound generation state
@@ -220,26 +212,19 @@ int   waveform_type  = WAVE_SINE_AM;
         Shock state
 ############################################################################################################*/
 
-float            pulse_high         = 20.0f;
-// Bar ON time (ms), from trial
-float            pulse_low          = 20.0f;
-// Bar OFF time (ms), from trial
-int              iPulseHigh         = 0;
-// pulse_high converted to Timer6 ticks
-int              iPulseLow          = 0;
-// pulse_low  converted to Timer6 ticks
-int              iBarPin            = iInitialBar;
-// Currently active bar pin
+float            pulse_high         = 20.0f;  // Bar ON time (ms), from trial
+float            pulse_low          = 20.0f;  // Bar OFF time (ms), from trial
+int              iPulseHigh         = 0;       // pulse_high converted to Timer6 ticks
+int              iPulseLow          = 0;       // pulse_low converted to Timer6 ticks
+int              iBarPin            = iInitialBar; // Currently active bar pin
 
 // iCountShock: tick counter incremented by shockClock() ISR at 10 kHz.
 // bShockTick:  set by ISR each tick, consumed by bars() in the main loop.
 // volatile: modified in ISR, read in main context.
 volatile int32_t iCountShock        = 0;
 volatile bool    bShockTick         = false;
-bool             bShockActive       = false;
-// True while shock is being delivered
-bool             bBarStatus         = false;
-// Current bar pin state (true=HIGH)
+bool             bShockActive       = false; // True while shock is being delivered
+bool             bBarStatus         = false; // Current bar pin state (true=HIGH)
 
 /*############################################################################################################
         Light state
@@ -260,55 +245,44 @@ float light_freq_cur = 0.0f;
 ############################################################################################################*/
 
 volatile uint32_t wdT4 = 0;    // Incremented by carrier()    ISR at dacRate Hz
-volatile uint32_t wdT6 = 0;
-// Incremented by shockClock() ISR at 10 kHz
-volatile uint32_t wdT7 = 0;
-// Incremented by lightClock()   ISR (not monitored, reserved)
+volatile uint32_t wdT6 = 0;    // Incremented by shockClock() ISR at 10 kHz
+volatile uint32_t wdT7 = 0;    // Incremented by lightClock() ISR (not monitored, reserved)
 
-uint32_t wdT4L  = 0, wdT4Ms  = 0;
-// Last snapshot of wdT4 and timestamp
-uint32_t wdT6L  = 0, wdT6Ms  = 0;
-// Last snapshot of wdT6 and timestamp
-bool     bWD    = false;
-// True while watchdog monitoring is active
+uint32_t wdT4L  = 0, wdT4Ms  = 0; // Last snapshot of wdT4 and its timestamp
+uint32_t wdT6L  = 0, wdT6Ms  = 0; // Last snapshot of wdT6 and its timestamp
+bool     bWD    = false;           // True while watchdog monitoring is active
 
 /*############################################################################################################
         SerialUSB receive buffer
-
         handleSerialUSB() accumulates incoming bytes here until a newline is received,
         then dispatches the complete JSON command.
+
         Sizing guide (15 float fields per trial, ~75 bytes/trial in JSON):
+
           Trials   Buffer size   Command size (approx)
           -------  -----------   ---------------------
-              10      1024 B           714 B
-              20      2048 B  
-          1394 B
-              30      2048 B          2074 B
-              40      4096 B          2754 B
-              50      4096 B      
-      3434 B
-              60      4096 B          4114 B
-              70      8192 B          4794 B
-              80      8192 B          
-  5474 B
-              90      8192 B          6154 B
-             100      8192 B          6835 B
-             120     16384 B          8195 B
-      
-         150     16384 B         10235 B  (MAX_TRIALS limit)
+              10      1024 B           750 B
+              20      2048 B          1475 B
+              30      2048 B          2200 B
+              40      4096 B          2925 B
+              50      4096 B          3650 B
+              60      4096 B          4375 B
+              70      8192 B          5100 B
+              80      8192 B          5825 B
+              90      8192 B          6550 B
+             100      8192 B          7275 B
+             120     16384 B          8725 B
+             150     16384 B         10900 B  (MAX_TRIALS limit)
 
-        Rule: buffer must be >= command size.
-        Use next power of 2.
-        RAM cost: sbuf + trials[N]*56 bytes + fbuf[N*14]*4 bytes
+        Rule: buffer must be >= command size. Use next power of 2.
+        RAM cost: sbuf + trials[N]*60 bytes + fbuf[N*15]*4 bytes
           MAX_TRIALS=50  + sbuf=4096:  ~14 KB total
-          MAX_TRIALS=100 + sbuf=8192:  ~20 KB total
-          MAX_TRIALS=150 + sbuf=16384: ~36 KB total  (DUE has ~52 KB stack remaining)
+          MAX_TRIALS=100 + sbuf=8192:  ~21 KB total
+          MAX_TRIALS=150 + sbuf=16384: ~37 KB total  (DUE has ~52 KB stack remaining)
 ############################################################################################################*/
 
-static char  sbuf[8192];
-// SerialUSB receive buffer (see sizing guide above)
-static int   slen = 0;
-// Current number of bytes accumulated in sbuf
+static char  sbuf[8192]; // SerialUSB receive buffer (see sizing guide above)
+static int   slen = 0;   // Current number of bytes accumulated in sbuf
 
 /*############################################################################################################
         Function declarations
@@ -509,8 +483,7 @@ void modulating()
 void shockClock()
 {
   if (bShockActive) { iCountShock++; bShockTick = true; }
-  wdT6++;
-  // Watchdog counter: WatchdogCheck() verifies Timer6 is running
+  wdT6++; // Watchdog counter: WatchdogCheck() verifies Timer6 is running
 }
 
 // lightClock() -- called by Timer7 at light_freq x 2 Hz.
@@ -835,7 +808,7 @@ void RunTrial(int t)
       digitalWrite(pinLIGHT_SYN, HIGH);
       if (tr.light_freq == 9999.0f)
         digitalWrite(pinLIGHT, HIGH);
-      // DC high: freq=9999 is sentinel. Calibration option
+        // DC high: light_freq=9999 is sentinel value -- Timer7 not started, pin stays HIGH
     }
     // Light OFF
     if (lightOn && !lightOff && elapsed >= lightEnd)
@@ -887,7 +860,7 @@ void Abort()
 
   dacc_write_conversion_data(DACC_INTERFACE, 0);
   digitalWrite(pinSOUND_SYN, LOW);
-  dacc_disable_channel(DACC_INTERFACE, 1); //test
+  dacc_disable_channel(DACC_INTERFACE, 1); // Disable DAC1 to prevent idle noise on speaker output
 
   digitalWrite(pinSHOCK_SYN, LOW);
   digitalWrite(pinLIGHT_SYN, LOW);
@@ -928,19 +901,14 @@ void WatchdogCheck()
   // Monitor Timer4 (DAC clock) only while sound is active.
   if (digitalRead(pinSOUND_SYN) && carrier_freq > 0.0f)
   {
-    if (wdT4 != wdT4L) { wdT4L = wdT4;
-      wdT4Ms = now; }
-    else if ((now - wdT4Ms) >= WATCHDOG_TIMEOUT_MS) { WatchdogFault(); return;
-    }
+    if (wdT4 != wdT4L) { wdT4L = wdT4; wdT4Ms = now; }
+    else if ((now - wdT4Ms) >= WATCHDOG_TIMEOUT_MS) { WatchdogFault(); return; }
   }
-  else { wdT4L = wdT4; wdT4Ms = now;
-  }
+  else { wdT4L = wdT4; wdT4Ms = now; }
 
   // Monitor Timer6 (shock clock) continuously after watchdog activation.
-  if (wdT6 != wdT6L) { wdT6L = wdT6;
-    wdT6Ms = now; }
-  else if ((now - wdT6Ms) >= WATCHDOG_TIMEOUT_MS) { WatchdogFault(); return;
-  }
+  if (wdT6 != wdT6L) { wdT6L = wdT6; wdT6Ms = now; }
+  else if ((now - wdT6Ms) >= WATCHDOG_TIMEOUT_MS) { WatchdogFault(); return; }
 }
 
 void WatchdogFault()
@@ -1042,8 +1010,7 @@ void handleSerialUSB()
     char c = SerialUSB.read();
     if (c == '\n' || c == '\r')
     {
-      if (slen == 0) continue;
-      // Skip empty lines (e.g. \r\n pairs)
+      if (slen == 0) continue; // Skip empty lines (e.g. \r\n pairs)
       sbuf[slen] = '\0';
       slen = 0;
       if (hasCmd(sbuf, "ping"))
@@ -1130,8 +1097,7 @@ void handleSerialUSB()
                     // Prevents DAC glitch on first run caused by USB interrupt coinciding with sound onset.
                     // It only shifts the absolute start of the experiment by 50 ms relative to the START button press.
 
-        RunExperiment();
-        // Blocking -- returns when all trials complete or bAbort is set
+        RunExperiment(); // Blocking -- returns when all trials complete or bAbort is set
         continue;
       }
 
@@ -1139,8 +1105,7 @@ void handleSerialUSB()
     }
     else
     {
-      // Accumulate byte;
-      // discard silently if buffer is full.
+      // Accumulate byte; discard silently if buffer is full.
       if (slen < (int)sizeof(sbuf) - 1) sbuf[slen++] = c;
     }
   }

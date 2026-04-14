@@ -58,7 +58,7 @@ RAM cost of the new buffer: 32 x 32 = 1024 uint16_t = 2 KB, compared to 32 KB fo
 Three fully independent stimuli with individual onset and duration per trial:
 
 - **SOUND** — DAC1, AM-modulated sine, pure sine, or square wave. Carrier 0-20 kHz, modulator 0-500 Hz.
-- **LIGHT** — pin 45, square wave 50% duty cycle, configurable frequency.
+- **LIGHT** — pin 45, square wave 50% duty cycle, configurable frequency. `light_freq = 9999` drives the pin permanently HIGH (DC).
 - **SHOCK** — 8 bar pins, round-robin, configurable pulse HIGH/LOW timing (ms).
 
 ### Trial structure
@@ -82,6 +82,7 @@ pulse_high, pulse_low, onset_light, light_duration, light_freq
 - Protocol save/load (semicolon-delimited .txt)
 - Calibration dialogs for Sound, Light, and Shock (infinite-duration single trial, stopped by ABORT)
 - Poll timer paused during experiment to prevent USB interrupt glitch on DAC Timer4 (Native Port)
+- Trial counter updates at each trial onset via status polls scheduled to trial durations
 - 4-second timeout warning if DUE does not respond after connection
 
 ### Serial protocol
@@ -117,6 +118,7 @@ All four sync pins are active HIGH while the corresponding stimulus is active:
 - Light output on pin 45
 - Hardware ABORT button between pin 48 and GND (INPUT_PULLUP, active LOW)
 - Recommended: AC coupling capacitor (10 uF) in series on DAC1 output to prevent DC offset at speaker
+- Optional: OLED display 128x32, SSD1306, I2C — SDA = pin 20, SCL = pin 21, address 0x3C
 
 ---
 
@@ -126,7 +128,7 @@ All four sync pins are active HIGH while the corresponding stimulus is active:
 pip install pyserial PyQt5
 ```
 
-Python 3.8 or later.
+Python 3.8 or later. For OLED support, the Arduino IDE must have the Adafruit_GFX and Adafruit_SSD1306 libraries installed.
 
 ---
 
@@ -140,6 +142,29 @@ Python 3.8 or later.
 | `Stimuli_PY_DUE.ino` | Arduino DUE firmware |
 | `Waveforms.h` | Adaptive DAC lookup tables |
 | `DueTimer.h / .cpp` | Timer library (Ivan Seidel) |
+| `image.png` | Logo displayed in the application header |
+
+---
+
+## Technical notes
+
+### DAC audio glitch prevention
+The Python poll timer (`{"cmd":"status"}` every 1500 ms) is stopped when the experiment starts and resumes only after the DUE confirms the experiment has ended. This prevents USB interrupt collisions with Timer4 (DAC clock) on the Native Port, which caused audible clicks during sound playback. Calibration dialogs also stop the poll before sending commands for the same reason.
+
+### DAC idle noise prevention
+DAC1 is disabled between sounds (`dacc_disable_channel`) and re-enabled only at sound onset with a 10 µs stabilisation delay to prevent onset transients. An AC coupling capacitor (10 µF) in series on the DAC1 output is recommended to block DC offset at the speaker.
+
+### USB handshake delay
+A 50 ms `delay()` is inserted in the firmware between `sendOK("started")` and `RunExperiment()`. This allows the USB transmission to complete before Timer4 starts, preventing the DAC glitch that occurs on the first run when the USB interrupt coincides with sound onset. This only shifts the absolute start of the experiment by 50 ms relative to the START button press.
+
+### Trial counter synchronisation
+Python schedules one `{"cmd":"status"}` poll at the calculated start time of each trial, based on the programmed trial durations. This avoids continuous polling during the experiment while keeping the trial counter and status pill accurate throughout the session.
+
+### Shock bar frequency
+The round-robin scheme means each individual bar operates at `1000 / (pulse_high + pulse_low)` Hz. The full 8-bar system cycles at that rate divided by 8. For example, with `pulse_high = pulse_low = 20 ms` each bar pulses at 25 Hz but the system completes a full round-robin cycle at 3.125 Hz.
+
+### OLED status display
+The SSD1306 OLED (128x32, I2C) shows experiment state at each transition: Ready at startup, trial number and stimulus type (CS / CS+US / US) at each trial onset, and Done or Aborted at the end. The display is updated in `RunTrial()` before `ProgramSound()` and Timer4 start, so there is no audio glitch risk. The OLED is optional — the firmware runs normally if the display is not connected.
 
 ---
 
@@ -147,7 +172,6 @@ Python 3.8 or later.
 
 - Waveform type selector is not yet exposed in the UI (currently fixed to SINE_AM)
 - Noise waveforms (white, pink, brown) are not implemented. The current lookup-table architecture is periodic and does not support stochastic generation. A possible approach: generate noise buffers in Python (numpy/scipy), send as a custom table via serial, and replay in loop on the DUE
-- The round-robin shock bar scheme means each individual bar operates at `1000 / (pulse_high + pulse_low)` Hz, while the full 8-bar system cycles at that rate divided by 8
 - Theme switching (dark/light) at runtime is not implemented. The two separate files are the recommended approach given that stylesheet values are distributed across individual widget calls
 
 ---
@@ -172,5 +196,4 @@ Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
 
 ---
 **Development started:** December 2023  
-**Last update:** April 2026  
-
+**Last update:** April 14, 2026  
