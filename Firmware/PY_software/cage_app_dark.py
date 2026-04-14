@@ -146,110 +146,6 @@ FIELDS = [
     "light_freq",       # LIGHT frequency (Hz); 9999 = DC HIGH (constant ON)
 ]
 
-TOOLTIP_DOCS = {
-    "baseline": (
-        "<html><body>"
-        "<p><b>Baseline (s)</b></p>"
-        "<p><span style='font-size:9pt;'>Pre-trial silent period at the start of the session. "
-        "No stimulus is active and no ITI timing applies.</span></p>"
-        "</body></html>"
-    ),
-
-    "silence": (
-        "<html><body>"
-        "<p><b>Inter-Trial Interval (s)</b></p>"
-        "<p><span style='font-size:9pt;'>Delay between the end of one trial and the start of the next. "
-        "All outputs remain inactive during this period.</span></p>"
-        "</body></html>"
-    ),
-
-    "onset_sound": (
-        "<html><body>"
-        "<p><b>Sound Onset (s)</b></p>"
-        "<p><span style='font-size:9pt;'>Time after trial start when the auditory stimulus is triggered.</span></p>"
-        "</body></html>"
-    ),
-
-    "sound_duration": (
-        "<html><body>"
-        "<p><b>Sound Duration (s)</b></p>"
-        "<p><span style='font-size:9pt;'>Duration of the auditory stimulus once it is activated.</span></p>"
-        "</body></html>"
-    ),
-
-    "carrier_freq": (
-        "<html><body>"
-        "<p><b>Carrier Frequency (Hz)</b></p>"
-        "<p><span style='font-size:9pt;'>Base sine-wave frequency of the sound stimulus (perceived pitch). "
-        "Limited by DAC table resolution.</span></p>"
-        "</body></html>"
-    ),
-
-    "modulator_freq": (
-        "<html><body>"
-        "<p><b>AM Modulator Frequency (Hz)</b></p>"
-        "<p><span style='font-size:9pt;'>Rate of amplitude modulation applied to the carrier signal. "
-        "Controls envelope fluctuation speed.</span></p>"
-        "</body></html>"
-    ),
-
-    "volume": (
-        "<html><body>"
-        "<p><b>Volume (%)</b></p>"
-        "<p><span style='font-size:9pt;'>Output amplitude scaling applied to the sound stimulus (0-100%).</span></p>"
-        "</body></html>"
-    ),
-
-    "onset_light": (
-        "<html><body>"
-        "<p><b>Light Onset (s)</b></p>"
-        "<p><span style='font-size:9pt;'>Time after trial start when the light stimulus is activated.</span></p>"
-        "</body></html>"
-    ),
-
-    "light_duration": (
-        "<html><body>"
-        "<p><b>Light Duration (s)</b></p>"
-        "<p><span style='font-size:9pt;'>Duration of LED activation during the trial.</span></p>"
-        "</body></html>"
-    ),
-
-    "light_freq": (
-        "<html><body>"
-        "<p><b>Light Frequency (Hz)</b></p>"
-        "<p><span style='font-size:9pt;'>Blinking frequency of the light stimulus. "
-        "</body></html>"
-    ),
-
-    "onset_shock": (
-        "<html><body>"
-        "<p><b>Shock Onset (s)</b></p>"
-        "<p><span style='font-size:9pt;'>Time after trial start when shock delivery begins.</span></p>"
-        "</body></html>"
-    ),
-
-    "shock_duration": (
-        "<html><body>"
-        "<p><b>Shock Duration (s)</b></p>"
-        "<p><span style='font-size:9pt;'>Total time window in which shock pulses may occur.</span></p>"
-        "</body></html>"
-    ),
-
-    "pulse_high": (
-        "<html><body>"
-        "<p><b>Pulse HIGH (ms)</b></p>"
-        "<p><span style='font-size:9pt;'>Duration of the active phase for each shock bar during rotation.</span></p>"
-        "</body></html>"
-    ),
-
-    "pulse_low": (
-        "<html><body>"
-        "<p><b>Pulse LOW (ms)</b></p>"
-        "<p><span style='font-size:9pt;'>Inactive interval between shock bar activations in the rotation cycle.</span></p>"
-        "</body></html>"
-    )
-}
-
 # =============================================================================
 # SerialThread
 # Runs the serial port in a dedicated QThread so the UI never blocks.
@@ -537,7 +433,11 @@ class TimingWidget(QWidget):
 # UI FACTORY HELPERS
 # =============================================================================
 
-def make_input_row(label_text, default_val, unit_text="", color=TEXT, tooltip=None):
+def make_input_row(label_text, default_val, unit_text="", color=TEXT):
+    """
+    Build a horizontal input row: [label | QLineEdit | unit label].
+    Returns (QWidget, QLineEdit) so the caller can read the entered value.
+    """
     row = QWidget()
     lay = QHBoxLayout(row)
     lay.setContentsMargins(0, 2, 0, 2)
@@ -563,7 +463,7 @@ def make_input_row(label_text, default_val, unit_text="", color=TEXT, tooltip=No
     lay.addWidget(u)
 
     lay.addStretch()
-    return row, lbl, edit
+    return row, edit
 
 
 def make_button(text, color=TEXT, border_color=BORDER):
@@ -824,16 +724,6 @@ class CageApp(QMainWindow):
         self.setWindowTitle("Conditioning Cage")
         self.resize(1300, 850)
         self.setStyleSheet(f"background:{BG}; color:{TEXT};")
-        if app:
-            app.setStyleSheet(app.styleSheet() + f"""
-            QToolTip {{
-                background-color: {BG_PANEL};
-                color: {TEXT};
-                border: 1px solid {BORDER};
-                padding: 4px;
-                font-size: 11px;
-            }}
-            """)
 
         # Application state
         self.trials            = []    # List of trial dicts built by _add_trial()
@@ -845,7 +735,6 @@ class CageApp(QMainWindow):
 
         self.init_ui()
         self._build_menu()
-        self.apply_tooltips()
 
         # Poll timer: sends {"cmd":"status"} every 1500 ms while connected.
         # The DUE response updates the status pill and trial counter.
@@ -1079,32 +968,32 @@ class CageApp(QMainWindow):
         cfg_frm, cfg_lay = make_section_frame("TRIAL CONFIGURATION")
 
         # Timing
-        r, self.lbl_baseline, self.e_baseline = make_input_row("Baseline",             0,  "s"); cfg_lay.addWidget(r)
-        r, self.lbl_silence, self.e_silence   = make_input_row("Inter-Trial Interval", 0,  "s"); cfg_lay.addWidget(r)
+        r, self.e_baseline = make_input_row("Baseline",             0,  "s"); cfg_lay.addWidget(r)
+        r, self.e_silence  = make_input_row("Inter-Trial Interval", 0,  "s"); cfg_lay.addWidget(r)
         cfg_lay.addSpacing(10)
 
         # Sound
         cfg_lay.addWidget(QLabel(f"<span style='color:{ACC_BLUE}; font-size:13px; font-weight:bold;'>SOUND</span>"))
-        r, self.lbl_snd_onset, self.e_snd_onset = make_input_row("Onset",        0,    "s");  cfg_lay.addWidget(r)
-        r, self.lbl_snd_dur, self.e_snd_dur     = make_input_row("Duration",     10,   "s");  cfg_lay.addWidget(r)
-        r, self.lbl_carrier, self.e_carrier     = make_input_row("Carrier freq", 3000, "Hz"); cfg_lay.addWidget(r)
-        r, self.lbl_modulator, self.e_modulator = make_input_row("Modulator",    10,   "Hz"); cfg_lay.addWidget(r)
-        r, self.lbl_volume, self.e_volume       = make_input_row("Volume",       100,  "%");  cfg_lay.addWidget(r)
+        r, self.e_snd_onset = make_input_row("Onset",        0,    "s");  cfg_lay.addWidget(r)
+        r, self.e_snd_dur   = make_input_row("Duration",     10,   "s");  cfg_lay.addWidget(r)
+        r, self.e_carrier   = make_input_row("Carrier freq", 3000, "Hz"); cfg_lay.addWidget(r)
+        r, self.e_modulator = make_input_row("Modulator",    10,   "Hz"); cfg_lay.addWidget(r)
+        r, self.e_volume    = make_input_row("Volume",       100,  "%");  cfg_lay.addWidget(r)
         cfg_lay.addSpacing(10)
 
         # LIGHT
         cfg_lay.addWidget(QLabel(f"<span style='color:{ACC_YELL}; font-size:13px; font-weight:bold;'>LIGHT</span>"))
-        r, self.lbl_light_onset, self.e_light_onset = make_input_row("Onset",     0,  "s");  cfg_lay.addWidget(r)
-        r, self.lbl_light_dur, self.e_light_dur     = make_input_row("Duration",  10, "s");  cfg_lay.addWidget(r)
-        r, self.lbl_light_freq, self.e_light_freq   = make_input_row("Frequency", 10, "Hz"); cfg_lay.addWidget(r)
+        r, self.e_light_onset = make_input_row("Onset",     0,  "s");  cfg_lay.addWidget(r)
+        r, self.e_light_dur   = make_input_row("Duration",  10, "s");  cfg_lay.addWidget(r)
+        r, self.e_light_freq  = make_input_row("Frequency", 10, "Hz"); cfg_lay.addWidget(r)
         cfg_lay.addSpacing(10)
 
         # Shock
         cfg_lay.addWidget(QLabel(f"<span style='color:{ACC_RED}; font-size:13px; font-weight:bold;'>SHOCK</span>"))
-        r, self.lbl_shk_onset, self.e_shk_onset = make_input_row("Onset",      8,  "s");  cfg_lay.addWidget(r)
-        r, self.lbl_shk_dur, self.e_shk_dur     = make_input_row("Duration",   2,  "s");  cfg_lay.addWidget(r)
-        r, self.lbl_pulse_hi, self.e_pulse_hi   = make_input_row("Pulse HIGH", 20, "ms"); cfg_lay.addWidget(r)
-        r, self.lbl_pulse_lo, self.e_pulse_lo   = make_input_row("Pulse LOW",  20, "ms"); cfg_lay.addWidget(r)
+        r, self.e_shk_onset = make_input_row("Onset",      8,  "s");  cfg_lay.addWidget(r)
+        r, self.e_shk_dur   = make_input_row("Duration",   2,  "s");  cfg_lay.addWidget(r)
+        r, self.e_pulse_hi  = make_input_row("Pulse HIGH", 20, "ms"); cfg_lay.addWidget(r)
+        r, self.e_pulse_lo  = make_input_row("Pulse LOW",  20, "ms"); cfg_lay.addWidget(r)
         cfg_lay.addSpacing(10)
 
         btn_add = make_button("+ ADD TRIAL", TEXT, BORDER)
@@ -1182,32 +1071,6 @@ class CageApp(QMainWindow):
         lay.addWidget(log_frm)
 
         return panel
-
-    def apply_tooltips(self):
-            """Maps centralized documentation to UI elements."""
-            
-            mapping = {
-                "baseline": (self.lbl_baseline, self.e_baseline),
-                "silence": (self.lbl_silence, self.e_silence),
-                "onset_sound": (self.lbl_snd_onset, self.e_snd_onset),
-                "sound_duration": (self.lbl_snd_dur, self.e_snd_dur),
-                "carrier_freq": (self.lbl_carrier, self.e_carrier),
-                "modulator_freq": (self.lbl_modulator, self.e_modulator),
-                "volume": (self.lbl_volume, self.e_volume),
-                "onset_light": (self.lbl_light_onset, self.e_light_onset),
-                "light_duration": (self.lbl_light_dur, self.e_light_dur),
-                "light_freq": (self.lbl_light_freq, self.e_light_freq),
-                "onset_shock": (self.lbl_shk_onset, self.e_shk_onset),
-                "shock_duration": (self.lbl_shk_dur, self.e_shk_dur),
-                "pulse_high": (self.lbl_pulse_hi, self.e_pulse_hi),
-                "pulse_low": (self.lbl_pulse_lo, self.e_pulse_lo),
-            }
-
-            for key, widgets in mapping.items():
-                if key in TOOLTIP_DOCS:
-                    text = TOOLTIP_DOCS[key]
-                    for w in widgets:
-                        w.setToolTip(text)
 
     # -------------------------------------------------------------------------
     # Timeline
