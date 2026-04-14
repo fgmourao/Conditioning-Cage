@@ -9,7 +9,7 @@ AUTHOR  : Flavio Afonso Goncalves Mourao
 DESCRIPTION:
     PyQt5 graphical interface for the Conditioning Cage Arduino DUE.
     The DUE runs Stimuli_PY_DUE.ino and controls three independent stimuli:
-    SOUND (DAC1, AM sine), LED (pin 45, square wave), SHOCK (8 bar pins,
+    SOUND (DAC1, AM sine), LIGHT (pin 45, square wave), SHOCK (8 bar pins,
     round-robin). This application programs trial parameters, triggers
     execution, and monitors status in real time.
 
@@ -63,9 +63,9 @@ TRIAL DATA FORMAT (15 fields per trial, matching DUE struct Trial):
     shock_duration -- shock duration (s); 0 = no shock
     pulse_high     -- shock bar ON time per pulse (ms)
     pulse_low      -- shock bar OFF time between pulses (ms)
-    onset_led      -- LED onset within trial (s)
-    led_duration   -- LED duration (s); 0 = no LED
-    led_freq       -- LED square wave frequency (Hz); 9999 = DC HIGH (constant ON)
+    onset_light    -- light onset within trial (s)
+    light_duration -- light duration (s); 0 = no light
+    light_freq     -- light square wave frequency (Hz); 9999 = DC HIGH (constant ON)
 
 REQUIREMENTS:
     pip install pyserial PyQt5
@@ -141,9 +141,9 @@ FIELDS = [
     "shock_duration", # Shock duration (s)
     "pulse_high",     # Shock bar ON time per pulse (ms)
     "pulse_low",      # Shock bar OFF time between pulses (ms)
-    "onset_led",      # LED onset within trial (s)
-    "led_duration",   # LED duration (s)
-    "led_freq",       # LED frequency (Hz); 9999 = DC HIGH (constant ON)
+    "onset_light",      # LIGHT onset within trial (s)
+    "light_duration",   # LIGHT duration (s)
+    "light_freq",       # LIGHT frequency (Hz); 9999 = DC HIGH (constant ON)
 ]
 
 # =============================================================================
@@ -269,7 +269,7 @@ class SerialThread(QThread):
 #
 # Layout (top to bottom):
 #   SOUND row  -- blue blocks at (onset_sound, sound_duration) per trial
-#   LED row    -- yellow blocks at (onset_led, led_duration) per trial
+#   LIGHT row    -- yellow blocks at (onset_light, light_duration) per trial
 #   SHOCK row  -- red blocks at (onset_shock, shock_duration) per trial
 #   Time axis  -- labelled tick marks in seconds
 #
@@ -339,7 +339,7 @@ class TimingWidget(QWidget):
             events.append((cursor, t))
             s_end = t.get('onset_sound', 0) + t.get('sound_duration', 0)
             k_end = t.get('onset_shock', 0) + t.get('shock_duration', 0)
-            l_end = t.get('onset_led',   0) + t.get('led_duration',   0)
+            l_end = t.get('onset_light',   0) + t.get('light_duration',   0)
             cursor += max(s_end, k_end, l_end, 0.0)
 
         total = max(cursor, 0.1)  # Avoid division by zero
@@ -350,11 +350,11 @@ class TimingWidget(QWidget):
 
         # Row vertical positions
         y_sound = self.PAD_T
-        y_led   = self.PAD_T + self.ROW_H + self.ROW_GAP
+        y_light   = self.PAD_T + self.ROW_H + self.ROW_GAP
         y_shock = self.PAD_T + 2 * (self.ROW_H + self.ROW_GAP)
 
         # Faint background track for each row
-        for y, color_hex in [(y_sound, ACC_BLUE), (y_led, ACC_YELL), (y_shock, ACC_RED)]:
+        for y, color_hex in [(y_sound, ACC_BLUE), (y_light, ACC_YELL), (y_shock, ACC_RED)]:
             c = QColor(color_hex)
             c.setAlpha(25)
             p.setPen(Qt.NoPen)
@@ -376,7 +376,7 @@ class TimingWidget(QWidget):
                 p.drawRoundedRect(x1, y + 2, x2 - x1, self.ROW_H - 4, 2, 2)
 
             draw_block(y_sound, ACC_BLUE, t.get('onset_sound', 0), t.get('sound_duration', 0))
-            draw_block(y_led,   ACC_YELL, t.get('onset_led',   0), t.get('led_duration',   0))
+            draw_block(y_light,   ACC_YELL, t.get('onset_light',   0), t.get('light_duration', 0))
             draw_block(y_shock, ACC_RED,  t.get('onset_shock', 0), t.get('shock_duration', 0))
 
             # Separator at the start of each trial (skip the first)
@@ -388,7 +388,7 @@ class TimingWidget(QWidget):
         # Row labels
         for y, label, color_hex in [
             (y_sound, "SOUND", ACC_BLUE),
-            (y_led,   "LED",   ACC_YELL),
+            (y_light, "LIGHT", ACC_YELL),
             (y_shock, "SHOCK", ACC_RED),
         ]:
             p.setPen(QColor(color_hex))
@@ -420,8 +420,10 @@ class TimingWidget(QWidget):
         # Progress line: semi-transparent white bar showing elapsed time.
         # Clamped to [0, total] so it never overruns the right edge.
         if self.progress_time is not None:
-            px = int(s2x(min(self.progress_time, total)))
-            p.setPen(QPen(QColor(30, 30, 30, 160), 2))
+            OFFSET = -0.1  # seconds -- compensates DUE handshake + firmware delay(50ms)
+            adjusted = max(self.progress_time - OFFSET, 0.0)
+            px = int(s2x(min(adjusted, total)))
+            p.setPen(QPen(QColor(180, 180, 180, 140), 2))
             p.drawLine(px, self.PAD_T, px, y_shock + self.ROW_H)
 
         p.end()
@@ -474,8 +476,8 @@ def make_button(text, color=TEXT, border_color=BORDER):
         f"QPushButton {{ background:transparent; color:{color}; "
         f"border:1px solid {border_color}; "
         f"font-size:11px; font-weight:bold; padding:8px 12px; }}"
-        f"QPushButton:hover {{ background:rgba(0,0,0,0.05); }}"
-        f"QPushButton:pressed {{ background:rgba(0,0,0,0.1); }}"
+        f"QPushButton:hover {{ background:rgba(255,255,255,0.05); }}"
+        f"QPushButton:pressed {{ background:rgba(255,255,255,0.1); }}"
     )
     b.setCursor(Qt.PointingHandCursor)
     return b
@@ -538,12 +540,17 @@ class _CalibBase(QDialog):
         
         # Stop poll to avoid USB interrupt glitch on DAC Timer4
         if self.parent():
-            self.parent()._poll_timer.stop()
+           self.parent()._poll_timer.stop()
             
     def _abort(self):
         """Send abort to immediately stop the calibration stimulus."""
         if self.serial_thread:
             self.serial_thread.send({"cmd": "abort"})
+            # Send a blank trial to clear DUE memory after calibration
+            blank = {f: 0.0 for f in FIELDS}
+            values = ";".join(str(float(blank[f])) for f in FIELDS)
+            self.serial_thread.send({"cmd": "program", "n": 1, "data": values}) 
+            
         # Resume polling after calibration stops
         if self.parent():
             self.parent()._poll_timer.start()
@@ -624,29 +631,29 @@ class CalibSoundDialog(_CalibBase):
             "waveform_type": 0.0,
             "onset_shock": 0.0, "shock_duration": 0.0,
             "pulse_high": 0.0, "pulse_low": 0.0,
-            "onset_led": 0.0, "led_duration": 0.0, "led_freq": 0.0,
+            "onset_light": 0.0, "light_duration": 0.0, "light_freq": 0.0,
         })
 
 
-class CalibLEDDialog(_CalibBase):
+class CalibLightDialog(_CalibBase):
     """
-    LED held continuously HIGH until ABORT.
-    led_freq = 9999 is the firmware sentinel that skips Timer7 and drives
-    the LED pin permanently HIGH. led_duration = 9999 s runs until ABORT.
+    LIGHT held continuously HIGH until ABORT.
+    light_freq = 9999 is the firmware sentinel that skips Timer7 and drives
+    the LIGHT pin permanently HIGH. light_duration = 9999 s runs until ABORT.
     """
     def __init__(self, serial_thread, parent=None):
         super().__init__(serial_thread, parent)
-        self.setWindowTitle("Calibration - LED")
+        self.setWindowTitle("Calibration - Light")
         self.setFixedWidth(320)
         self.setStyleSheet(f"background:{BG_PANEL}; color:{TEXT};")
         lay = QVBoxLayout(self)
         lay.setSpacing(12)
         lay.setContentsMargins(20, 20, 20, 20)
-        title = QLabel("LED CALIBRATION")
+        title = QLabel("LIGHT CALIBRATION")
         title.setStyleSheet(f"color:{ACC_YELL}; font-size:13px; font-weight:bold;")
         title.setTextFormat(Qt.RichText)
         lay.addWidget(title)
-        info = QLabel("LED held ON (HIGH) continuously\nPress ABORT to turn off.")
+        info = QLabel("LIGHT held ON (HIGH) continuously\nPress ABORT to turn off.")
         info.setStyleSheet(f"color:{DIM}; font-size:11px;")
         info.setAlignment(Qt.AlignCenter)
         lay.addWidget(info)
@@ -660,7 +667,7 @@ class CalibLEDDialog(_CalibBase):
             "volume": 0.0, "waveform_type": 0.0,
             "onset_shock": 0.0, "shock_duration": 0.0,
             "pulse_high": 0.0, "pulse_low": 0.0,
-            "onset_led": 0.0, "led_duration": 9999.0, "led_freq": 9999.0,
+            "onset_light": 0.0, "light_duration": 9999.0, "light_freq": 9999.0,
         })
 
 
@@ -702,7 +709,7 @@ class CalibShockDialog(_CalibBase):
             "volume": 0.0, "waveform_type": 0.0,
             "onset_shock": 0.0, "shock_duration": 9999.0,
             "pulse_high": 60000.0, "pulse_low": 10000.0,
-            "onset_led": 0.0, "led_duration": 0.0, "led_freq": 0.0,
+            "onset_light": 0.0, "light_duration": 0.0, "light_freq": 0.0,
         })
 
 
@@ -716,7 +723,7 @@ class CageApp(QMainWindow):
         #self.setWindowTitle("Conditioning Cage v2.0")
         self.setWindowTitle("Conditioning Cage")
         self.resize(1300, 850)
-        self.setStyleSheet(f"background:{BG}; color:{DIM};")
+        self.setStyleSheet(f"background:{BG}; color:{TEXT};")
 
         # Application state
         self.trials            = []    # List of trial dicts built by _add_trial()
@@ -771,20 +778,20 @@ class CageApp(QMainWindow):
         # Calibration menu: individual stimulus calibration dialogs
         calib_menu  = menubar.addMenu("Calibration")
         act_cal_snd = QAction("Sound", self)
-        act_cal_led = QAction("LED",   self)
+        act_cal_light = QAction("Light",   self)
         act_cal_shk = QAction("Shock", self)
         act_cal_snd.triggered.connect(lambda: CalibSoundDialog(self.serial_thread, self).exec_())
-        act_cal_led.triggered.connect(lambda: CalibLEDDialog(self.serial_thread,   self).exec_())
+        act_cal_light.triggered.connect(lambda: CalibLightDialog(self.serial_thread,   self).exec_())
         act_cal_shk.triggered.connect(lambda: CalibShockDialog(self.serial_thread, self).exec_())
         calib_menu.addAction(act_cal_snd)
-        calib_menu.addAction(act_cal_led)
+        calib_menu.addAction(act_cal_light)
         calib_menu.addAction(act_cal_shk)
         
-        # Protocol menu: save / load / clear trial lists
-        proto_menu = menubar.addMenu("Help")
-        act_save  = QAction("Info", self);
-        act_save.triggered.connect(self._show_info)
-        proto_menu.addAction(act_save)
+        # HELP menu
+        help_menu = menubar.addMenu("Help")
+        act_info  = QAction("Info", self);
+        act_info.triggered.connect(self._show_info)
+        help_menu.addAction(act_info)
 
     # -------------------------------------------------------------------------
     # Protocol save / load / clear
@@ -833,7 +840,11 @@ class CageApp(QMainWindow):
                             )
                             added += 1
                         except ValueError:
+                            self._log(f"Skipped malformed line: {line[:40]}", "warn")
                             continue
+                    else:
+                        self._log(f"Skipped short line ({len(parts)} fields): {line[:40]}", "warn")    
+                            
             if added:
                 self._refresh_table()
                 self._update_timeline()
@@ -940,7 +951,7 @@ class CageApp(QMainWindow):
             f"color:{DIM}; font-size:11px; font-family:'Courier New';"
         )
         self.lbl_status = QLabel("IDLE")
-        self.lbl_status.setStyleSheet(f"color:{DIM}; border:none; padding:4px 6px;")
+        self.lbl_status.setStyleSheet(f"color:{DIM}; border:none; font-weight:bold; padding:4px 6px;")
 
         lay.addWidget(self.lbl_trial)
         lay.addWidget(self.lbl_status)
@@ -970,11 +981,11 @@ class CageApp(QMainWindow):
         r, self.e_volume    = make_input_row("Volume",       100,  "%");  cfg_lay.addWidget(r)
         cfg_lay.addSpacing(10)
 
-        # LED
-        cfg_lay.addWidget(QLabel(f"<span style='color:{ACC_YELL}; font-size:13px; font-weight:bold;'>LED</span>"))
-        r, self.e_led_onset = make_input_row("Onset",     0,  "s");  cfg_lay.addWidget(r)
-        r, self.e_led_dur   = make_input_row("Duration",  10, "s");  cfg_lay.addWidget(r)
-        r, self.e_led_freq  = make_input_row("Frequency", 10, "Hz"); cfg_lay.addWidget(r)
+        # LIGHT
+        cfg_lay.addWidget(QLabel(f"<span style='color:{ACC_YELL}; font-size:13px; font-weight:bold;'>LIGHT</span>"))
+        r, self.e_light_onset = make_input_row("Onset",     0,  "s");  cfg_lay.addWidget(r)
+        r, self.e_light_dur   = make_input_row("Duration",  10, "s");  cfg_lay.addWidget(r)
+        r, self.e_light_freq  = make_input_row("Frequency", 10, "Hz"); cfg_lay.addWidget(r)
         cfg_lay.addSpacing(10)
 
         # Shock
@@ -1024,7 +1035,7 @@ class CageApp(QMainWindow):
         cols = ["#", "BASELINE", "ITI",
                 "SND ON", "SND DUR", "CARRIER", "MOD", "VOL",
                 "SHK ON", "SHK DUR", "PLS HI", "PLS LO",
-                "LED ON", "LED DUR", "LED HZ", "DEL"]
+                "LIGHT ON", "LIGHT DUR", "LIGHT HZ", "DEL"]
         self.tbl = QTableWidget(0, len(cols))
         self.tbl.setHorizontalHeaderLabels(cols)
         self.tbl.setStyleSheet(
@@ -1083,8 +1094,8 @@ class CageApp(QMainWindow):
             f"QPushButton {{ background:transparent; color:{TEXT}; "
             f"border:1px solid {BORDER}; "
             f"font-size:11px; font-weight:bold; padding:8px 12px; }}"
-            f"QPushButton:hover {{ background:rgba(0,0,0,0.05); }}"
-            f"QPushButton:pressed {{ background:rgba(0,0,0,0.1); }}"
+            f"QPushButton:hover {{ background:rgba(255,255,255,0.05); }}"
+            f"QPushButton:pressed {{ background:rgba(255,255,255,0.1); }}"
         )
 
     def _refresh_ports(self):
@@ -1128,8 +1139,8 @@ class CageApp(QMainWindow):
             f"QPushButton {{ background:transparent; color:{ACC_RED}; "
             f"border:1px solid {ACC_RED}; "
             f"font-size:11px; font-weight:bold; padding:8px 12px; }}"
-            f"QPushButton:hover {{ background:rgba(0,0,0,0.05); }}"
-            f"QPushButton:pressed {{ background:rgba(0,0,0,0.1); }}"
+            f"QPushButton:hover {{ background:rgba(255,255,255,0.05); }}"
+            f"QPushButton:pressed {{ background:rgba(255,255,255,0.1); }}"
         )
         self.btn_connect.setEnabled(True)
         self._log("Connected.", "ok")
@@ -1143,7 +1154,7 @@ class CageApp(QMainWindow):
 
     def _check_due_response(self):
         """Show a warning if the DUE did not respond within 4 s of connecting."""
-        if not self._ready_confirmed:
+        if self._connected and not self._ready_confirmed:
             QMessageBox.warning(
                 self, "No Response",
                 "No response from Conditioning Cage.\n\nPossible causes:\n"
@@ -1201,7 +1212,7 @@ class CageApp(QMainWindow):
             t_tot = d.get("total",   0)
             if run:
                 # DUE trial index is 0-based; display as 1-based
-                self.lbl_trial.setText(f"TRIAL {t_cur + 1}/{t_tot}")
+                self.lbl_trial.setText(f"TRIAL {t_cur+1}/{t_tot}")
             elif self._programmed_total > 0:
                 self.lbl_trial.setText(f"TRIAL 1/{self._programmed_total}")
             else:
@@ -1269,9 +1280,9 @@ class CageApp(QMainWindow):
             "shock_duration": self._get_float(self.e_shk_dur),
             "pulse_high":     self._get_float(self.e_pulse_hi),
             "pulse_low":      self._get_float(self.e_pulse_lo),
-            "onset_led":      self._get_float(self.e_led_onset),
-            "led_duration":   self._get_float(self.e_led_dur),
-            "led_freq":       self._get_float(self.e_led_freq),
+            "onset_light":      self._get_float(self.e_light_onset),
+            "light_duration":   self._get_float(self.e_light_dur),
+            "light_freq":       self._get_float(self.e_light_freq),
         }
         self.trials.append(t)
         self._refresh_table()
@@ -1290,7 +1301,7 @@ class CageApp(QMainWindow):
                 f"{t['carrier_freq']}", f"{t['modulator_freq']}", f"{t['volume']}",
                 f"{t['onset_shock']}",  f"{t['shock_duration']}",
                 f"{t['pulse_high']}",   f"{t['pulse_low']}",
-                f"{t['onset_led']}",    f"{t['led_duration']}",   f"{t['led_freq']}",
+                f"{t['onset_light']}",    f"{t['light_duration']}",   f"{t['light_freq']}",
             ]
             self.tbl.insertRow(i)
             for j, val in enumerate(vals):
@@ -1347,6 +1358,7 @@ class CageApp(QMainWindow):
         self._experiment_start = time.time()
         self._progress_timer.start()
         self._poll_timer.stop() # Avoid USB interrupt glitch on DAC Timer4 (Native Port)
+        self._schedule_trial_polls() # Schedule one status poll at the end of each trial
 
     def _send_abort(self):
         """Send the abort command and stop the progress line."""
@@ -1354,7 +1366,22 @@ class CageApp(QMainWindow):
         self.serial_thread.send({"cmd": "abort"})
         self._log("ABORT sent.", "err")
         self._stop_progress()
-
+        self._poll_timer.start()  # Resume polling after abort
+        
+    def _schedule_trial_polls(self):
+        """Schedule one status poll at the end of each trial based on trial durations."""
+        cursor = 0.0
+        for t in self.trials:
+            cursor += t.get('baseline', 0) + t.get('silence', 0)
+            # Poll 200ms after trial ends -- enough margin for DUE to update state
+            delay_ms = int(cursor * 1000) + 100
+            QTimer.singleShot(delay_ms, self._poll_status)
+            # Advance cursor past trial duration
+            s_end = t.get('onset_sound', 0) + t.get('sound_duration', 0)
+            k_end = t.get('onset_shock', 0) + t.get('shock_duration', 0)
+            l_end = t.get('onset_light', 0) + t.get('light_duration', 0)
+            cursor += max(s_end, k_end, l_end, 0.0)
+            
     def _poll_status(self):
         """Request a status update from the DUE (called by _poll_timer)."""
         if self._connected:
@@ -1371,7 +1398,7 @@ class CageApp(QMainWindow):
 
     def _stop_progress(self):
         """Stop the progress timer and hide the progress line."""
-        self._progress_timer.stop()
+        self._progress_timer.stop() 
         self._experiment_start = None
         self.timing_widget.set_progress(None)
 
