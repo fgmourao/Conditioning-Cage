@@ -25,7 +25,7 @@ SERIAL PROTOCOL (115200 baud, newline-terminated JSON):
         {"cmd":"program","n":N,"data":"f0;f1;..."}
             -> {"ok":true,"msg":"N trials programmed"}
                Sends N trials. 'data' is a flat semicolon-separated string of
-               N x 15 float values in row-major order, matching FIELDS exactly.
+               N x 16 float values in row-major order, matching FIELDS exactly.
 
         {"cmd":"start"}
             -> {"ok":true,"msg":"started"}
@@ -50,7 +50,7 @@ SERIAL PROTOCOL (115200 baud, newline-terminated JSON):
         4 = FAULT    -- watchdog fault, experiment aborted
         5 = ABORTED  -- aborted by command or hardware button
 
-TRIAL DATA FORMAT (15 fields per trial, matching DUE struct Trial):
+TRIAL DATA FORMAT (16 fields per trial, matching DUE struct Trial):
     baseline       -- quiet period at the start of the session (s)
     silence        -- inter-trial interval between each trial (s)
     onset_sound    -- sound onset within trial (s)
@@ -59,6 +59,10 @@ TRIAL DATA FORMAT (15 fields per trial, matching DUE struct Trial):
     modulator_freq -- AM modulator frequency (Hz); 0 = pure sine
     volume         -- amplitude (%), 0-100
     waveform_type  -- 0=SINE_AM, 1=SINE, 2=SQUARE
+                      NOTE: reserved. The firmware supports all three modes,
+                      but this UI always sends 0 (SINE_AM, which reduces to
+                      pure sine when modulator_freq=0). A waveform selector
+                      may be added in a future release.
     onset_shock    -- shock onset within trial (s)
     shock_duration -- shock duration (s); 0 = no shock
     pulse_high     -- shock bar ON time per pulse (ms)
@@ -66,6 +70,7 @@ TRIAL DATA FORMAT (15 fields per trial, matching DUE struct Trial):
     onset_light    -- light onset within trial (s)
     light_duration -- light duration (s); 0 = no light
     light_freq     -- light square wave frequency (Hz); 9999 = DC HIGH (constant ON)
+    bar_select     -- shock bar: 0 = round-robin (default), 1-8 = fixed single bar
 
 REQUIREMENTS:
     pip install pyserial PyQt5
@@ -136,14 +141,15 @@ FIELDS = [
     "carrier_freq",   # DAC carrier frequency (Hz)
     "modulator_freq", # AM modulator frequency (Hz); 0 = pure sine
     "volume",         # Sound amplitude (%)
-    "waveform_type",  # 0=SINE_AM  1=SINE  2=SQUARE
+    "waveform_type",  # 0=SINE_AM  1=SINE  2=SQUARE -- reserved; UI always sends 0
     "onset_shock",    # Shock onset within trial (s)
     "shock_duration", # Shock duration (s)
     "pulse_high",     # Shock bar ON time per pulse (ms)
     "pulse_low",      # Shock bar OFF time between pulses (ms)
-    "onset_light",      # LIGHT onset within trial (s)
-    "light_duration",   # LIGHT duration (s)
-    "light_freq",       # LIGHT frequency (Hz); 9999 = DC HIGH (constant ON)
+    "onset_light",    # LIGHT onset within trial (s)
+    "light_duration", # LIGHT duration (s)
+    "light_freq",     # LIGHT frequency (Hz); 9999 = DC HIGH (constant ON)
+    "bar_select",     # Shock bar selection: 0 = round-robin (default), 1-8 = fixed bar
 ]
 
 # =============================================================================
@@ -537,10 +543,6 @@ class _CalibBase(QDialog):
         values = ";".join(str(float(trial_dict[f])) for f in FIELDS)
         self.serial_thread.send({"cmd": "program", "n": 1, "data": values})
         self.serial_thread.send({"cmd": "start"})
-        
-        # Stop poll to avoid USB interrupt glitch on DAC Timer4
-        if self.parent():
-           self.parent()._poll_timer.stop()
             
     def _abort(self):
         """Send abort to immediately stop the calibration stimulus."""
@@ -582,6 +584,15 @@ class _CalibBase(QDialog):
             return float(edit.text())
         except ValueError:
             return default
+
+    def closeEvent(self, event):
+        """Abort any active calibration stimulus when dialog is closed.
+        Without this, closing with X leaves stimulus running for 9999 s."""
+        if self.serial_thread:
+            self.serial_thread.send({"cmd": "abort"})
+        if self.parent():
+            self.parent()._poll_timer.start()
+        event.accept()
 
     def _build_btn_row(self, lay):
         """Add START / ABORT buttons to lay."""
@@ -628,10 +639,11 @@ class CalibSoundDialog(_CalibBase):
             "carrier_freq":   self._get(self.e_carrier),
             "modulator_freq": self._get(self.e_mod),
             "volume":         self._get(self.e_volume),
-            "waveform_type": 0.0,
+            "waveform_type": 0.0, # Reserved; calibration always uses SINE_AM
             "onset_shock": 0.0, "shock_duration": 0.0,
             "pulse_high": 0.0, "pulse_low": 0.0,
             "onset_light": 0.0, "light_duration": 0.0, "light_freq": 0.0,
+            "bar_select": 0.0,
         })
 
 
@@ -668,48 +680,79 @@ class CalibLightDialog(_CalibBase):
             "onset_shock": 0.0, "shock_duration": 0.0,
             "pulse_high": 0.0, "pulse_low": 0.0,
             "onset_light": 0.0, "light_duration": 9999.0, "light_freq": 9999.0,
+            "bar_select": 0.0,
         })
 
 
 class CalibShockDialog(_CalibBase):
     """
-    Shock bars cycle continuously until ABORT.
-    pulse_high = 60 000 ms, pulse_low = 10 000 ms: each bar is ON for 1 min then OFF
-    for 10s before advancing to the next bar (round-robin 1 through 8).
+    Shock bar calibration.
+    Allows selection of a specific bar (1-8) or round-robin (all bars).
+    bar_select = 0  -> round-robin through all 8 bars (default behaviour).
+    bar_select = 1-8 -> fixed single bar; stays active for entire shock_duration.
+    pulse_high and pulse_low are user-configurable (ms).
     shock_duration = 9999 s runs until ABORT.
     """
     def __init__(self, serial_thread, parent=None):
         super().__init__(serial_thread, parent)
         self.setWindowTitle("Calibration - Shock")
-        self.setFixedWidth(360)
+        self.setFixedWidth(380)
         self.setStyleSheet(f"background:{BG_PANEL}; color:{TEXT};")
         lay = QVBoxLayout(self)
         lay.setSpacing(12)
         lay.setContentsMargins(20, 20, 20, 20)
+
         title = QLabel("SHOCK CALIBRATION")
         title.setStyleSheet(f"color:{ACC_RED}; font-size:13px; font-weight:bold;")
         title.setTextFormat(Qt.RichText)
         lay.addWidget(title)
-        info = QLabel(
-            "Shock bars cycle continuously:\n"
-            "  Pulse HIGH: 60 000 ms  (1 minute ON)\n"
-            "  Pulse LOW:  10 000 ms  (10 seconds OFF)\n"
-            "  Bars advance in sequence: 1 to 8 and back to 1.\n\n"
-            "Press ABORT to stop."
+
+        # Pulse timing inputs
+        self.e_pulse_high = self._field(lay, "Pulse HIGH", 60000, "ms")
+        self.e_pulse_low  = self._field(lay, "Pulse LOW",  10000, "ms")
+
+        # Bar selection
+        bar_row = QWidget()
+        bar_lay = QHBoxLayout(bar_row)
+        bar_lay.setContentsMargins(0, 0, 0, 0)
+        bar_lay.setSpacing(10)
+        bar_lbl = QLabel("Bar select")
+        bar_lbl.setStyleSheet(f"color:{TEXT}; font-size:11px;")
+        bar_lbl.setFixedWidth(110)
+        bar_lay.addWidget(bar_lbl)
+
+        self.cmb_bar = QComboBox()
+        self.cmb_bar.addItem("All", 0)
+        for i in range(1, 9):
+            self.cmb_bar.addItem(f"Bar {i}", i)
+        self.cmb_bar.setStyleSheet(
+            f"background:{BG_INPUT}; color:{TEXT}; border:1px solid {BORDER}; "
+            f"font-size:11px; padding:2px;"
         )
-        info.setStyleSheet(f"color:{DIM}; font-size:11px;")
+        self.cmb_bar.setFixedWidth(130)
+        bar_lay.addWidget(self.cmb_bar)
+        bar_lay.addStretch()
+        lay.addWidget(bar_row)
+
+        info = QLabel("For individual bars shock runs continuously until ABORT.")
+        info.setStyleSheet(f"color:{DIM}; font-size:10px;")
+        info.setAlignment(Qt.AlignCenter)
         lay.addWidget(info)
+
         self._build_btn_row(lay)
 
     def _start(self):
+        bar_sel = float(self.cmb_bar.currentData())
         self._send_trial({
             "baseline": 0.0, "silence": 0.0,
             "onset_sound": 0.0, "sound_duration": 0.0,
             "carrier_freq": 0.0, "modulator_freq": 0.0,
             "volume": 0.0, "waveform_type": 0.0,
             "onset_shock": 0.0, "shock_duration": 9999.0,
-            "pulse_high": 60000.0, "pulse_low": 10000.0,
+            "pulse_high": self._get(self.e_pulse_high, 60000.0),
+            "pulse_low":  self._get(self.e_pulse_low,  10000.0),
             "onset_light": 0.0, "light_duration": 0.0, "light_freq": 0.0,
+            "bar_select": bar_sel,
         })
 
 
@@ -726,12 +769,14 @@ class CageApp(QMainWindow):
         self.setStyleSheet(f"background:{BG}; color:{TEXT};")
 
         # Application state
-        self.trials            = []    # List of trial dicts built by _add_trial()
-        self._connected        = False # True while a SerialThread is active
-        self.serial_thread     = None  # Active SerialThread instance, or None
-        self._ready_confirmed  = False # Set True when any data arrives from DUE
-        self._programmed_total = 0     # Number of trials last acknowledged by DUE
-        self._experiment_start = None  # time.time() snapshot when START was sent
+        self.trials            = []            # List of trial dicts built by _add_trial()
+        self._connected        = False         # True while a SerialThread is active
+        self.serial_thread     = None          # Active SerialThread instance, or None
+        self._ready_confirmed  = False         # Set True when any data arrives from DUE
+        self._programmed_total = 0             # Number of trials last acknowledged by DUE
+        self._experiment_start        = None   # time.time() snapshot when START was sent
+        self._experiment_done_logged  = False  # True after "Experiment completed" logged -- prevents loop
+        self._poll_generation  = 0             # Incremented each START; orphaned singleShots are suppressed
 
         self.init_ui()
         self._build_menu()
@@ -766,12 +811,18 @@ class CageApp(QMainWindow):
         proto_menu = menubar.addMenu("Protocol")
         act_save  = QAction("Save Protocol...", self); act_save.setShortcut("Ctrl+S")
         act_load  = QAction("Load Protocol...", self); act_load.setShortcut("Ctrl+O")
+        act_save_log = QAction("Save Log...", self)
         act_clear = QAction("Clear All Trials",  self)
+
         act_save.triggered.connect(self._save_protocol)
         act_load.triggered.connect(self._load_protocol)
+        act_save_log.triggered.connect(self._save_log)
         act_clear.triggered.connect(self._clear_trials)
+        
         proto_menu.addAction(act_save)
         proto_menu.addAction(act_load)
+        proto_menu.addSeparator()
+        proto_menu.addAction(act_save_log)
         proto_menu.addSeparator()
         proto_menu.addAction(act_clear)
 
@@ -853,6 +904,28 @@ class CageApp(QMainWindow):
                 QMessageBox.warning(self, "Load Error", "No valid trials found in file.")
         except Exception as e:
             QMessageBox.critical(self, "Load Error", str(e))
+
+    def _save_log(self):
+        """Save the event log to a plain text file."""
+        text = self.log.toPlainText()
+        if not text.strip():
+            QMessageBox.warning(self, "Empty Log", "Nothing to save.")
+            return
+        path, _ = QFileDialog.getSaveFileName(
+            self, "Save Log", "", "Text files (*.txt);;All files (*)"
+        )
+        if not path:
+            return
+        if not path.endswith('.txt'):
+            path += '.txt'
+        try:
+            with open(path, 'w') as f:
+                f.write(text)
+            self._log(f"Log saved: {os.path.basename(path)}", "ok")
+        except Exception as e:
+            QMessageBox.critical(self, "Save Error", str(e))
+
+
 
     def _clear_trials(self):
         if self.trials:
@@ -937,12 +1010,24 @@ class CageApp(QMainWindow):
         )
         self._refresh_ports()
 
+        btn_refresh = QPushButton("⟳")
+        btn_refresh.setFixedSize(26, 26)
+        btn_refresh.setToolTip("Refresh serial ports")
+        btn_refresh.setStyleSheet(
+            f"QPushButton {{ background:transparent; color:{DIM}; border:1px solid {BORDER}; "
+            f"font-size:14px; padding:0px; }}"
+            f"QPushButton:hover {{ color:{TEXT}; border-color:{TEXT}; }}"
+        )
+        btn_refresh.setCursor(Qt.PointingHandCursor)
+        btn_refresh.clicked.connect(self._refresh_ports)
+
         self.btn_connect = make_button("CONNECT", TEXT, BORDER)
         self.btn_connect.setFixedHeight(26)
         self.btn_connect.clicked.connect(self._toggle_connect)
 
         lay.addWidget(lbl_port)
         lay.addWidget(self.cmb_port)
+        lay.addWidget(btn_refresh)
         lay.addWidget(self.btn_connect)
         lay.addSpacing(30)
 
@@ -977,7 +1062,7 @@ class CageApp(QMainWindow):
         r, self.e_snd_onset = make_input_row("Onset",        0,    "s");  cfg_lay.addWidget(r)
         r, self.e_snd_dur   = make_input_row("Duration",     10,   "s");  cfg_lay.addWidget(r)
         r, self.e_carrier   = make_input_row("Carrier freq", 3000, "Hz"); cfg_lay.addWidget(r)
-        r, self.e_modulator = make_input_row("Modulator",    10,   "Hz"); cfg_lay.addWidget(r)
+        r, self.e_modulator = make_input_row("Modulator",    0,   "Hz"); cfg_lay.addWidget(r)
         r, self.e_volume    = make_input_row("Volume",       100,  "%");  cfg_lay.addWidget(r)
         cfg_lay.addSpacing(10)
 
@@ -1151,7 +1236,9 @@ class CageApp(QMainWindow):
         # Warn the user if the DUE has not responded within 4 s (wrong port).
         self._ready_confirmed = False
         QTimer.singleShot(4000, self._check_due_response)
-
+        self._experiment_done_logged = True  # Suppress spurious "Experiment completed" on first poll:
+        # DUE may report status=DONE (3) from a previous session immediately after connect.
+        
     def _check_due_response(self):
         """Show a warning if the DUE did not respond within 4 s of connecting."""
         if self._connected and not self._ready_confirmed:
@@ -1178,7 +1265,10 @@ class CageApp(QMainWindow):
         self._log("Disconnected.", "warn")
 
     def _on_serial_error(self, err):
-        """Handle a serial exception: show popup and reset connection state."""
+        """Handle a serial exception: show popup and reset connection state.
+        NOTE: if the USB cable is disconnected during an experiment, the DUE
+        continues autonomously. The only way to stop it is the hardware ABORT
+        button (pin 48) on the DUE board."""
         self._poll_timer.stop()
         self._stop_progress()
         self._connected = False
@@ -1219,15 +1309,27 @@ class CageApp(QMainWindow):
                 self.lbl_trial.setText("TRIAL 0/0")
             if d.get("fault"):
                 self._log("WATCHDOG FAULT - experiment aborted.", "err")
+                QMessageBox.critical(self, "Hardware Fault",
+                    "Watchdog fault detected.\n\nAll stimuli have been stopped.\n"
+                    "Check hardware connections before continuing.")
             if not run:
                 self._stop_progress()
                 self._poll_timer.start()  # Resume polling after experiment ends
-                
+                if d.get("status", 0) == 3 and not self._experiment_done_logged:
+                    self._experiment_done_logged = True
+                    self._log("Experiment completed.", "ok")
+                    
         elif not d.get("ok", True):
             self._log(d.get("msg", "Error from DUE"), "err")
 
         elif "msg" in d:
-            if d["msg"] != "pong":  # pong is expected but not worth logging
+            if d["msg"] == "pong":
+                version = d.get("version", "unknown")
+                if version != "2.0":
+                    QMessageBox.warning(self, "Firmware Version Mismatch",
+                        f"Expected firmware v2.0, connected to v{version}.\n\n"
+                        "Update firmware before running experiments.")
+            else:
                 self._log(d["msg"], "ok")
                 # Update trial counter immediately when program is acknowledged
                 if "trials programmed" in d["msg"]:
@@ -1268,21 +1370,22 @@ class CageApp(QMainWindow):
     def _add_trial(self):
         """Read all input fields, append a trial dict, and refresh the UI."""
         t = {
-            "baseline":       self._get_float(self.e_baseline),
-            "silence":        self._get_float(self.e_silence),
-            "onset_sound":    self._get_float(self.e_snd_onset),
-            "sound_duration": self._get_float(self.e_snd_dur),
-            "carrier_freq":   self._get_float(self.e_carrier),
-            "modulator_freq": self._get_float(self.e_modulator),
-            "volume":         self._get_float(self.e_volume),
-            "waveform_type":  0.0,  # SINE_AM; no selector in this version
-            "onset_shock":    self._get_float(self.e_shk_onset),
-            "shock_duration": self._get_float(self.e_shk_dur),
-            "pulse_high":     self._get_float(self.e_pulse_hi),
-            "pulse_low":      self._get_float(self.e_pulse_lo),
+            "baseline":         self._get_float(self.e_baseline),
+            "silence":          self._get_float(self.e_silence),
+            "onset_sound":      self._get_float(self.e_snd_onset),
+            "sound_duration":   self._get_float(self.e_snd_dur),
+            "carrier_freq":     self._get_float(self.e_carrier),
+            "modulator_freq":   self._get_float(self.e_modulator),
+            "volume":           self._get_float(self.e_volume),
+            "waveform_type":    0.0,  # SINE_AM; no selector in this version
+            "onset_shock":      self._get_float(self.e_shk_onset),
+            "shock_duration":   self._get_float(self.e_shk_dur),
+            "pulse_high":       self._get_float(self.e_pulse_hi),
+            "pulse_low":        self._get_float(self.e_pulse_lo),
             "onset_light":      self._get_float(self.e_light_onset),
             "light_duration":   self._get_float(self.e_light_dur),
             "light_freq":       self._get_float(self.e_light_freq),
+            "bar_select":       0.0,  # Always round-robin for experiment trials
         }
         self.trials.append(t)
         self._refresh_table()
@@ -1333,7 +1436,7 @@ class CageApp(QMainWindow):
     def _send_params(self):
         """
         Serialise self.trials and send the "program" command to the DUE.
-        Data format: N * 15 floats in FIELDS order, semicolon-separated,
+        Data format: N * 16 floats in FIELDS order, semicolon-separated,
         row-major (all fields of trial 0, then trial 1, etc.).
         """
         if not self._connected:
@@ -1353,30 +1456,41 @@ class CageApp(QMainWindow):
     def _send_start(self):
         """Send the start command and begin the timeline progress line."""
         if not self._connected: return
+        if self._progress_timer.isActive(): return  # Already running -- ignore double-click
+        if not self.trials:
+            self._log("No trials programmed. Use SEND PARAMETERS first.", "warn")
+            return
         self.serial_thread.send({"cmd": "start"})
-        self._log("START command sent.", "ok")
+        self._log("Start command sent.", "ok")
         self._experiment_start = time.time()
         self._progress_timer.start()
-        self._poll_timer.stop() # Avoid USB interrupt glitch on DAC Timer4 (Native Port)
-        self._schedule_trial_polls() # Schedule one status poll at the end of each trial
+        self._poll_timer.stop()
+        self._poll_generation += 1
+        self._experiment_done_logged = False
+        self._schedule_trial_polls()  # Schedule status polls at each trial onset
 
     def _send_abort(self):
         """Send the abort command and stop the progress line."""
         if not self._connected: return
         self.serial_thread.send({"cmd": "abort"})
         self._log("ABORT sent.", "err")
+        self._poll_generation += 1  # Invalidate all pending singleShot polls
         self._stop_progress()
         self._poll_timer.start()  # Resume polling after abort
         
     def _schedule_trial_polls(self):
-        """Schedule one status poll at the end of each trial based on trial durations."""
+        """Schedule one status poll at the start of each trial.
+        Uses _poll_generation to suppress orphaned singleShots after ABORT.
+        NOTE: polls are scheduled relative to _send_start() time. USB latency
+        and firmware delay(50ms) introduce ~100ms initial offset; in long
+        experiments cumulative drift may reach several hundred ms.
+        Timing reference for stimuli is always the DUE sync pins, not these polls."""
+        gen = self._poll_generation  # capture current generation
         cursor = 0.0
         for t in self.trials:
             cursor += t.get('baseline', 0) + t.get('silence', 0)
-            # Poll 200ms after trial ends -- enough margin for DUE to update state
             delay_ms = int(cursor * 1000) + 100
-            QTimer.singleShot(delay_ms, self._poll_status)
-            # Advance cursor past trial duration
+            QTimer.singleShot(delay_ms, lambda g=gen: self._poll_if_current(g))
             s_end = t.get('onset_sound', 0) + t.get('sound_duration', 0)
             k_end = t.get('onset_shock', 0) + t.get('shock_duration', 0)
             l_end = t.get('onset_light', 0) + t.get('light_duration', 0)
@@ -1385,6 +1499,11 @@ class CageApp(QMainWindow):
     def _poll_status(self):
         """Request a status update from the DUE (called by _poll_timer)."""
         if self._connected:
+            self.serial_thread.send({"cmd": "status"})
+
+    def _poll_if_current(self, generation):
+        """Poll only if generation matches -- suppresses orphaned singleShots after ABORT."""
+        if self._connected and generation == self._poll_generation:
             self.serial_thread.send({"cmd": "status"})
 
     # -------------------------------------------------------------------------
@@ -1409,11 +1528,11 @@ class CageApp(QMainWindow):
     def _log(self, msg, level="info"):
         """
         Append a timestamped entry to the event log.
-        level: "ok" (white), "err" (red), "warn" (red), "info" (white).
+        level: "ok" (white), "info" (white), "warn" (yellow-orange), "err" (red).
         """
         colors = {"ok": TEXT, "err": ACC_RED, "warn": ACC_RED, "info": TEXT}
         color  = colors.get(level, TEXT)
-        ts     = time.strftime("%H:%M:%S")
+        ts     = time.strftime("%Y-%m-%d %H:%M:%S")
         self.log.append(
             f'<span style="color:{DIM}">{ts}</span> &nbsp; '
             f'<span style="color:{color}">{msg}</span>'
@@ -1425,12 +1544,17 @@ class CageApp(QMainWindow):
     # -------------------------------------------------------------------------
 
     def closeEvent(self, event):
-        """Stop all timers and the serial thread cleanly on window close."""
+        """Stop all timers and the serial thread cleanly on window close.
+        If an experiment is in progress, sends ABORT before closing so the DUE
+        does not continue delivering stimuli unattended (shock/sound/light)."""
+        if self._progress_timer.isActive() and self.serial_thread is not None:
+            self.serial_thread.send({"cmd": "abort"})
+            time.sleep(0.1)  # Brief wait for abort command to transmit
         self._poll_timer.stop()
         self._progress_timer.stop()
         if self.serial_thread is not None:
             self.serial_thread.stop()
-            self.serial_thread.wait()
+            self.serial_thread.wait(2000)  # Bounded wait -- avoids hang if thread stalls
         event.accept()
 
 
