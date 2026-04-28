@@ -26,10 +26,12 @@
  *                   unused. The Python UI always sends waveform_type=0 (SINE_AM), which
  *                   falls back to pure sine when modulator_freq=0. SINE/SQUARE remain
  *                   available via manual protocol edit and may be re-enabled in a future UI release. 
- * Three independent stimuli with individual onset/offset timing:
- *   SOUND -- DAC1, AM sine or pure sine or square wave, Timer4/Timer5
- *   SHOCK -- 8 bar pins round-robin, Timer6 at 10 kHz clock
- *   LIGHT -- pin 45, square wave 50% duty cycle, Timer7
+ * Five independent stimuli with individual onset/offset timing:
+ *   SOUND    -- DAC1, AM sine or pure sine or square wave, Timer4/Timer5
+ *   SHOCK    -- 8 bar pins round-robin, Timer6 at 10 kHz clock
+ *   LIGHT    -- pin 45, square wave 50% duty cycle, Timer7
+ *   TRIGGER1 -- pin 10, digital HIGH pulse, duration in ms
+ *   TRIGGER2 -- pin 11, digital HIGH pulse, duration in ms
  *
  * OLED status display (128x32, SSD1306, I2C address 0x3C):
  *   Wired to DUE I2C bus: SDA = pin 20, SCL = pin 21.
@@ -51,7 +53,8 @@
  *   program data format: N x FIELDS_PER_TRIAL floats, semicolon-separated, row-major.
  *   Field order per trial: baseline, silence, onset_sound, sound_duration, carrier_freq,
  *   modulator_freq, volume, waveform_type, onset_shock, shock_duration, pulse_high,
- *   pulse_low, onset_light, light_duration, light_freq, bar_select.
+ *   pulse_low, onset_light, light_duration, light_freq, bar_select,
+ *   onset_trig1, trig1_duration, onset_trig2, trig2_duration.
  *
  * Sync outputs (all active HIGH while the corresponding stimulus is active):
  *   pin 50 -- SOUND_SYN  sound active
@@ -73,6 +76,8 @@
  *   13   -- debug LED (ON when parameters received OK, OFF after abort)
  *   20   -- I2C SDA (OLED display)
  *   21   -- I2C SCL (OLED display)
+ *   10   -- Trigger 1 output (HIGH during trig1_duration ms after onset_trig1)
+ *   11   -- Trigger 2 output (HIGH during trig2_duration ms after onset_trig2)
  *   23,25,27,29,31,33,35,37 -- shock bar outputs (active HIGH, round-robin)
  *
  * Timer allocation:
@@ -109,7 +114,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 #define MAX_TRIALS          100
 
 // Number of float fields per trial (must match Python FIELDS list).
-#define FIELDS_PER_TRIAL    16
+#define FIELDS_PER_TRIAL    20
 
 // SAM3X8E hardware DAC update rate limit: 1 MHz.
 // Timer4 frequency = carrier_freq x nC must not exceed this value.
@@ -164,6 +169,11 @@ static const int pinERROR      = 46;
 // Debug Light: ON when trial parameters are loaded, OFF after Abort().
 static const int pinLIGHT_DBG  = 13;
 
+// Trigger outputs: driven HIGH at onset, LOW at offset.
+// Independent programmable digital pulses for synchronising external equipment.
+static const int pinTRIG1      = 10;
+static const int pinTRIG2      = 11;
+
 // Shock bar pins: 8 pins starting at iInitialBar, spaced by barStep.
 // Round-robin activation: one bar active at a time, advancing each pulse cycle.
 static const int iInitialBar   = 23;
@@ -192,6 +202,10 @@ struct Trial {
   float light_duration;  // Light duration (s); 0 = no light
   float light_freq;      // Light square wave frequency (Hz); 9999 = DC HIGH (constant ON)
   float bar_select;      // Shock bar selection: 0 = round-robin (default), 1-8 = fixed bar
+  float onset_trig1;     // Trigger 1 onset time within trial (s)
+  float trig1_duration;  // Trigger 1 pulse duration (ms); 0 = disabled
+  float onset_trig2;     // Trigger 2 onset time within trial (s)
+  float trig2_duration;  // Trigger 2 pulse duration (ms); 0 = disabled
 };
 
 // Trial list stored in SRAM.
@@ -404,6 +418,10 @@ void setup()
   pinMode(pinERROR,     OUTPUT); digitalWrite(pinERROR,     LOW);
   pinMode(pinLIGHT_DBG, OUTPUT); digitalWrite(pinLIGHT_DBG, LOW);
   
+  // Trigger outputs: start LOW.
+  pinMode(pinTRIG1, OUTPUT); digitalWrite(pinTRIG1, LOW);
+  pinMode(pinTRIG2, OUTPUT); digitalWrite(pinTRIG2, LOW);
+
   // Shock bars: all LOW at startup.
   for (int i = 0; i < nBars; i++) {
     pinMode(iInitialBar + i * barStep, OUTPUT);
@@ -766,6 +784,8 @@ void RunExperiment()
   digitalWrite(pinSHOCK_SYN, LOW);
   digitalWrite(pinLIGHT_SYN, LOW);
   digitalWrite(pinLIGHT,     LOW);
+  digitalWrite(pinTRIG1,     LOW);
+  digitalWrite(pinTRIG2,     LOW);
   PIO_SetOutput(g_APinDescription[pinMOD_SYN].pPort,
                 g_APinDescription[pinMOD_SYN].ulPin, LOW, 0, PIO_DEFAULT);
   AllBarsLow();
@@ -858,19 +878,26 @@ void RunTrial(int t)
 
   uint32_t t0 = micros();
   
-  bool soundOn = false, soundOff = false;
-  bool shockOn = false, shockOff = false;
-  bool lightOn = false, lightOff   = false;
+  bool soundOn  = false, soundOff  = false;
+  bool shockOn  = false, shockOff  = false;
+  bool lightOn  = false, lightOff  = false;
+  bool trig1On  = false, trig1Off  = false;
+  bool trig2On  = false, trig2Off  = false;
 
   // Pre-compute end times.
   float soundEnd = tr.onset_sound + tr.sound_duration;
   float shockEnd = tr.onset_shock + tr.shock_duration;
   float lightEnd = tr.onset_light + tr.light_duration;
+  // trig1_duration and trig2_duration are in ms -- convert to seconds for timing.
+  float trig1End = tr.onset_trig1 + tr.trig1_duration / 1000.0f;
+  float trig2End = tr.onset_trig2 + tr.trig2_duration / 1000.0f;
   // Trial length = latest offset among active stimuli.
   float trLen = 0.0f;
   if (tr.sound_duration > 0.0f && soundEnd > trLen) trLen = soundEnd;
   if (tr.shock_duration > 0.0f && shockEnd > trLen) trLen = shockEnd;
   if (tr.light_duration > 0.0f && lightEnd > trLen) trLen = lightEnd;
+  if (tr.trig1_duration > 0.0f && trig1End > trLen) trLen = trig1End;
+  if (tr.trig2_duration > 0.0f && trig2End > trLen) trLen = trig2End;
   while (!bAbort)
   {
     // +5us compensates average loop overhead so onset timing is accurate.
@@ -958,6 +985,32 @@ void RunTrial(int t)
       digitalWrite(pinLIGHT,     LOW);
     }
 
+    // TRIGGER 1 ON
+    if (!trig1On && tr.trig1_duration > 0.0f && elapsed >= tr.onset_trig1)
+    {
+      trig1On = true;
+      digitalWrite(pinTRIG1, HIGH);
+    }
+    // TRIGGER 1 OFF
+    if (trig1On && !trig1Off && elapsed >= trig1End)
+    {
+      trig1Off = true;
+      digitalWrite(pinTRIG1, LOW);
+    }
+
+    // TRIGGER 2 ON
+    if (!trig2On && tr.trig2_duration > 0.0f && elapsed >= tr.onset_trig2)
+    {
+      trig2On = true;
+      digitalWrite(pinTRIG2, HIGH);
+    }
+    // TRIGGER 2 OFF
+    if (trig2On && !trig2Off && elapsed >= trig2End)
+    {
+      trig2Off = true;
+      digitalWrite(pinTRIG2, LOW);
+    }
+
     // Service shock bar state machine.
     if (bShockActive && bShockTick) { bShockTick = false; bars(bBarStatus); }
 
@@ -983,9 +1036,10 @@ void RunTrial(int t)
     PIO_SetOutput(g_APinDescription[pinMOD_SYN].pPort,
                   g_APinDescription[pinMOD_SYN].ulPin, LOW, 0, PIO_DEFAULT);
   }
-  if (!shockOff) { bShockActive = false; digitalWrite(pinSHOCK_SYN, LOW); AllBarsLow(); }
-  if (!lightOff)   { digitalWrite(pinLIGHT_SYN, LOW);
-    digitalWrite(pinLIGHT, LOW); }
+  if (!shockOff)  { bShockActive = false; digitalWrite(pinSHOCK_SYN, LOW); AllBarsLow(); }
+  if (!lightOff)  { digitalWrite(pinLIGHT_SYN, LOW); digitalWrite(pinLIGHT, LOW); }
+  if (!trig1Off)  { digitalWrite(pinTRIG1, LOW); }
+  if (!trig2Off)  { digitalWrite(pinTRIG2, LOW); }
 }
 
 /*############################################################################################################
@@ -1012,6 +1066,8 @@ void Abort()
   digitalWrite(pinSHOCK_SYN, LOW);
   digitalWrite(pinLIGHT_SYN, LOW);
   digitalWrite(pinLIGHT,     LOW);
+  digitalWrite(pinTRIG1,     LOW);
+  digitalWrite(pinTRIG2,     LOW);
   digitalWrite(pinERROR,     LOW);
   PIO_SetOutput(g_APinDescription[pinMOD_SYN].pPort,
                 g_APinDescription[pinMOD_SYN].ulPin, LOW, 0, PIO_DEFAULT);
@@ -1223,6 +1279,10 @@ void handleSerialUSB()
           trials[t].light_duration = f[13];
           trials[t].light_freq     = f[14];
           trials[t].bar_select     = f[15]; // 0 = round-robin; 1-8 = fixed bar
+          trials[t].onset_trig1    = f[16];
+          trials[t].trig1_duration = f[17];
+          trials[t].onset_trig2    = f[18];
+          trials[t].trig2_duration = f[19];
         }
 
         nTrials = n;

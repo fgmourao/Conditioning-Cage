@@ -8,12 +8,13 @@ AUTHOR  : Flavio Afonso Goncalves Mourao
 
 DESCRIPTION:
     PyQt5 graphical interface for the Conditioning Cage Arduino DUE.
-    The DUE runs Stimuli_PY_DUE.ino and controls three independent stimuli:
+    The DUE runs Stimuli_PY_DUE.ino and controls five independent stimuli:
     SOUND (DAC1, AM sine), LIGHT (pin 45, square wave), SHOCK (8 bar pins,
-    round-robin). This application programs trial parameters, triggers
+    round-robin), TRIGGER 1 (pin 10, digital pulse), TRIGGER 2 (pin 11,
+    digital pulse). This application programs trial parameters, triggers
     execution, and monitors status in real time.
 
-SERIAL PROTOCOL (115200 baud, newline-terminated JSON):
+SERIAL PROTOCOL (newline-terminated JSON, USB CDC speed):
     All commands are sent as compact JSON objects followed by newline.
     All responses from the DUE are also newline-terminated JSON objects.
 
@@ -50,7 +51,7 @@ SERIAL PROTOCOL (115200 baud, newline-terminated JSON):
         4 = FAULT    -- watchdog fault, experiment aborted
         5 = ABORTED  -- aborted by command or hardware button
 
-TRIAL DATA FORMAT (16 fields per trial, matching DUE struct Trial):
+TRIAL DATA FORMAT (20 fields per trial, matching DUE struct Trial):
     baseline       -- quiet period at the start of the session (s)
     silence        -- inter-trial interval between each trial (s)
     onset_sound    -- sound onset within trial (s)
@@ -71,6 +72,10 @@ TRIAL DATA FORMAT (16 fields per trial, matching DUE struct Trial):
     light_duration -- light duration (s); 0 = no light
     light_freq     -- light square wave frequency (Hz); 9999 = DC HIGH (constant ON)
     bar_select     -- shock bar: 0 = round-robin (default), 1-8 = fixed single bar
+    onset_trig1    -- Trigger 1 onset within trial (s)
+    trig1_duration -- Trigger 1 pulse duration (ms); 0 = disabled
+    onset_trig2    -- Trigger 2 onset within trial (s)
+    trig2_duration -- Trigger 2 pulse duration (ms); 0 = disabled
 
 REQUIREMENTS:
     pip install pyserial PyQt5
@@ -79,7 +84,8 @@ USAGE:
     python cage_app.py
     Compatible with Spyder IDE (uses QApplication.instance() to avoid
     duplicate QApplication errors on re-run).
-   
+    
+    
     
 AUTHOR:
     Flavio Mourao  (mourao.fg@gmail.com)
@@ -122,6 +128,8 @@ DIM       = "#888888"   # Secondary / label text
 ACC_BLUE  = "#1a5fa8"   # Sound stimulus; RUNNING status; info highlights
 ACC_RED   = "#9b1c1c"   # Shock stimulus; ABORT button; error messages
 ACC_YELL  = "#b35f00"   # LED stimulus; warning messages; CONNECTING state
+ACC_TRG1  = "#aaaaaa"   # Trigger 1 (light grey)
+ACC_TRG2  = "#555555"   # Trigger 2 (dark grey)
 
 # =============================================================================
 # FIELDS
@@ -149,6 +157,10 @@ FIELDS = [
     "light_duration", # LIGHT duration (s)
     "light_freq",     # LIGHT frequency (Hz); 9999 = DC HIGH (constant ON)
     "bar_select",     # Shock bar selection: 0 = round-robin (default), 1-8 = fixed bar
+    "onset_trig1",    # Trigger 1 onset within trial (s)
+    "trig1_duration", # Trigger 1 pulse duration (ms); 0 = disabled
+    "onset_trig2",    # Trigger 2 onset within trial (s)
+    "trig2_duration", # Trigger 2 pulse duration (ms); 0 = disabled
 ]
 
 # =============================================================================
@@ -303,8 +315,11 @@ class TimingWidget(QWidget):
         super().__init__(parent)
         self.trials        = []   # List of trial dicts, set by set_trials()
         self.progress_time = None # Elapsed seconds; None = progress line hidden
+        # Height accommodates up to 5 rows (SOUND, LIGHT, SHOCK, TRIG1, TRIG2).
+        # Unused rows are hidden dynamically in paintEvent but space is reserved
+        # so the widget does not jump when rows appear/disappear.
         self.setMinimumHeight(
-            self.PAD_T + 3 * self.ROW_H + 2 * self.ROW_GAP + self.PAD_B + 10
+            self.PAD_T + 5 * self.ROW_H + 4 * self.ROW_GAP + self.PAD_B + 10
         )
         self.setStyleSheet(f"background:{BG_PANEL};")
 
@@ -342,10 +357,12 @@ class TimingWidget(QWidget):
         for t in self.trials:
             cursor += t.get('baseline', 0) + t.get('silence', 0)
             events.append((cursor, t))
-            s_end = t.get('onset_sound', 0) + t.get('sound_duration', 0)
-            k_end = t.get('onset_shock', 0) + t.get('shock_duration', 0)
-            l_end = t.get('onset_light',   0) + t.get('light_duration',   0)
-            cursor += max(s_end, k_end, l_end, 0.0)
+            s_end  = t.get('onset_sound', 0) + t.get('sound_duration', 0)
+            k_end  = t.get('onset_shock', 0) + t.get('shock_duration', 0)
+            l_end  = t.get('onset_light',  0) + t.get('light_duration',  0)
+            t1_end = t.get('onset_trig1', 0) + t.get('trig1_duration', 0) / 1000.0
+            t2_end = t.get('onset_trig2', 0) + t.get('trig2_duration', 0) / 1000.0
+            cursor += max(s_end, k_end, l_end, t1_end, t2_end, 0.0)
 
         total = max(cursor, 0.1)  # Avoid division by zero
 
@@ -354,12 +371,44 @@ class TimingWidget(QWidget):
             return self.PAD_L + sec / total * draw_w
 
         # Row vertical positions
-        y_sound = self.PAD_T
-        y_light   = self.PAD_T + self.ROW_H + self.ROW_GAP
-        y_shock = self.PAD_T + 2 * (self.ROW_H + self.ROW_GAP)
+        y_sound  = self.PAD_T
+        y_light  = self.PAD_T + self.ROW_H + self.ROW_GAP
+        y_shock  = self.PAD_T + 2 * (self.ROW_H + self.ROW_GAP)
+        y_trig1  = self.PAD_T + 3 * (self.ROW_H + self.ROW_GAP)
+        y_trig2  = self.PAD_T + 4 * (self.ROW_H + self.ROW_GAP)
 
-        # Faint background track for each row
-        for y, color_hex in [(y_sound, ACC_BLUE), (y_light, ACC_YELL), (y_shock, ACC_RED)]:
+        # Determine which rows have active stimuli across all trials
+        has_sound  = any(t.get('sound_duration', 0) > 0 for t in self.trials)
+        has_light  = any(t.get('light_duration', 0) > 0 for t in self.trials)
+        has_shock  = any(t.get('shock_duration', 0) > 0 for t in self.trials)
+        has_trig1  = any(t.get('trig1_duration', 0) > 0 for t in self.trials)
+        has_trig2  = any(t.get('trig2_duration', 0) > 0 for t in self.trials)
+
+        # Build active rows list -- only rows with at least one active trial are shown
+        active_rows = []
+        if has_sound: active_rows.append((y_sound, ACC_BLUE,  "SOUND"))
+        if has_light: active_rows.append((y_light, ACC_YELL,  "LIGHT"))
+        if has_shock: active_rows.append((y_shock, ACC_RED,   "SHOCK"))
+        if has_trig1: active_rows.append((y_trig1, ACC_TRG1,  "TRIG 1"))
+        if has_trig2: active_rows.append((y_trig2, ACC_TRG2,  "TRIG 2"))
+
+        # Recompute row positions based on active rows only
+        row_positions = {}
+        for row_idx, (_, color_hex, label) in enumerate(active_rows):
+            row_positions[label] = self.PAD_T + row_idx * (self.ROW_H + self.ROW_GAP)
+
+        # Remap y variables to compact positions
+        y_sound = row_positions.get("SOUND",  y_sound)
+        y_light = row_positions.get("LIGHT",  y_light)
+        y_shock = row_positions.get("SHOCK",  y_shock)
+        y_trig1 = row_positions.get("TRIG 1", y_trig1)
+        y_trig2 = row_positions.get("TRIG 2", y_trig2)
+        # Bottom of last active row
+        last_y  = self.PAD_T + max(len(active_rows) - 1, 0) * (self.ROW_H + self.ROW_GAP)
+
+        # Faint background track for each active row
+        for y, color_hex, _ in active_rows:
+            y = row_positions[_]
             c = QColor(color_hex)
             c.setAlpha(25)
             p.setPen(Qt.NoPen)
@@ -381,28 +430,28 @@ class TimingWidget(QWidget):
                 p.drawRoundedRect(x1, y + 2, x2 - x1, self.ROW_H - 4, 2, 2)
 
             draw_block(y_sound, ACC_BLUE, t.get('onset_sound', 0), t.get('sound_duration', 0))
-            draw_block(y_light,   ACC_YELL, t.get('onset_light',   0), t.get('light_duration', 0))
-            draw_block(y_shock, ACC_RED,  t.get('onset_shock', 0), t.get('shock_duration', 0))
+            draw_block(y_light,  ACC_YELL, t.get('onset_light',  0), t.get('light_duration', 0))
+            draw_block(y_shock,  ACC_RED,  t.get('onset_shock',  0), t.get('shock_duration', 0))
+            # Triggers: trig1_duration/trig2_duration are in ms -- convert to s for display.
+            draw_block(y_trig1, ACC_TRG1, t.get('onset_trig1', 0), t.get('trig1_duration', 0) / 1000.0)
+            draw_block(y_trig2, ACC_TRG2, t.get('onset_trig2', 0), t.get('trig2_duration', 0) / 1000.0)
 
             # Separator at the start of each trial (skip the first)
             if abs_t0 > 0:
                 sx = int(s2x(abs_t0))
                 p.setPen(QPen(QColor(BORDER), 1))
-                p.drawLine(sx, self.PAD_T, sx, y_shock + self.ROW_H)
+                p.drawLine(sx, self.PAD_T, sx, last_y + self.ROW_H)
 
-        # Row labels
-        for y, label, color_hex in [
-            (y_sound, "SOUND", ACC_BLUE),
-            (y_light, "LIGHT", ACC_YELL),
-            (y_shock, "SHOCK", ACC_RED),
-        ]:
+        # Row labels -- only for active rows
+        for label, (_, color_hex, lbl) in [(r[2], r) for r in active_rows]:
+            y = row_positions[label]
             p.setPen(QColor(color_hex))
             p.setFont(QFont("Courier New", 11, QFont.Bold))
             p.drawText(0, y, self.PAD_L - 4, self.ROW_H,
                        Qt.AlignRight | Qt.AlignVCenter, label)
 
         # Time axis
-        axis_y = y_shock + self.ROW_H + 4
+        axis_y = last_y + self.ROW_H + 4
         p.setPen(QPen(QColor(DIM), 1))
         p.drawLine(int(self.PAD_L), axis_y, w - self.PAD_R, axis_y)
 
@@ -428,8 +477,8 @@ class TimingWidget(QWidget):
             OFFSET = -0.1  # seconds -- compensates DUE handshake + firmware delay(50ms)
             adjusted = max(self.progress_time - OFFSET, 0.0)
             px = int(s2x(min(adjusted, total)))
-            p.setPen(QPen(QColor(128, 128, 128, 140), 2))
-            p.drawLine(px, self.PAD_T, px, y_shock + self.ROW_H)
+            p.setPen(QPen(QColor(255, 255, 255, 140), 2))
+            p.drawLine(px, self.PAD_T, px, last_y + self.ROW_H)
 
         p.end()
 
@@ -544,14 +593,26 @@ class _CalibBase(QDialog):
         self.serial_thread.send({"cmd": "start"})
             
     def _abort(self):
-        """Send abort to immediately stop the calibration stimulus."""
+        """Send abort to stop the calibration stimulus.
+        If the parent window has programmed trials, re-sends them to the DUE
+        immediately so the DUE memory is restored to the experiment state.
+        This prevents the calibration trial (e.g. shock_duration=9999) from
+        remaining in DUE RAM and being accidentally executed on next START."""
         if self.serial_thread:
             self.serial_thread.send({"cmd": "abort"})
-            # Send a blank trial to clear DUE memory after calibration
-            blank = {f: 0.0 for f in FIELDS}
-            values = ";".join(str(float(blank[f])) for f in FIELDS)
-            self.serial_thread.send({"cmd": "program", "n": 1, "data": values}) 
-            
+            # Restore experiment trials to DUE memory if available.
+            # Without this, the DUE would retain the calibration trial in RAM
+            # and execute it if the user clicks START without re-sending params.
+            parent = self.parent()
+            if parent and parent.trials:
+                values = ";".join(
+                    str(float(t[f])) for t in parent.trials for f in FIELDS
+                )
+                self.serial_thread.send({
+                    "cmd": "program",
+                    "n": len(parent.trials),
+                    "data": values
+                })
         # Resume polling after calibration stops
         if self.parent():
             self.parent()._poll_timer.start()
@@ -586,11 +647,9 @@ class _CalibBase(QDialog):
 
     def closeEvent(self, event):
         """Abort any active calibration stimulus when dialog is closed.
-        Without this, closing with X leaves stimulus running for 9999 s."""
-        if self.serial_thread:
-            self.serial_thread.send({"cmd": "abort"})
-        if self.parent():
-            self.parent()._poll_timer.start()
+        Without this, closing with X leaves stimulus running for 9999 s.
+        Delegates to _abort() so DUE memory is also restored if trials exist."""
+        self._abort()
         event.accept()
 
     def _build_btn_row(self, lay):
@@ -643,6 +702,8 @@ class CalibSoundDialog(_CalibBase):
             "pulse_high": 0.0, "pulse_low": 0.0,
             "onset_light": 0.0, "light_duration": 0.0, "light_freq": 0.0,
             "bar_select": 0.0,
+            "onset_trig1": 0.0, "trig1_duration": 0.0,
+            "onset_trig2": 0.0, "trig2_duration": 0.0,
         })
 
 
@@ -680,6 +741,8 @@ class CalibLightDialog(_CalibBase):
             "pulse_high": 0.0, "pulse_low": 0.0,
             "onset_light": 0.0, "light_duration": 9999.0, "light_freq": 9999.0,
             "bar_select": 0.0,
+            "onset_trig1": 0.0, "trig1_duration": 0.0,
+            "onset_trig2": 0.0, "trig2_duration": 0.0,
         })
 
 
@@ -752,6 +815,8 @@ class CalibShockDialog(_CalibBase):
             "pulse_low":  self._get(self.e_pulse_low,  10000.0),
             "onset_light": 0.0, "light_duration": 0.0, "light_freq": 0.0,
             "bar_select": bar_sel,
+            "onset_trig1": 0.0, "trig1_duration": 0.0,
+            "onset_trig2": 0.0, "trig2_duration": 0.0,
         })
 
 
@@ -981,7 +1046,7 @@ class CageApp(QMainWindow):
         lay.setContentsMargins(0, 0, 0, 0)
 
         title = QLabel("CONDITIONING CAGE")
-        title.setStyleSheet(f"color:{DIM}; font-size:16px; font-weight:bold; letter-spacing:2px;")
+        title.setStyleSheet(f"color:{TEXT}; font-size:16px; font-weight:bold; letter-spacing:2px;")
         #ver = QLabel("V2.0")
         #ver.setStyleSheet(f"color:{TEXT}; font-size:16px;")
         lay.addWidget(title)
@@ -1080,6 +1145,18 @@ class CageApp(QMainWindow):
         r, self.e_pulse_lo  = make_input_row("Pulse LOW",  20, "ms"); cfg_lay.addWidget(r)
         cfg_lay.addSpacing(10)
 
+        # Trigger 1
+        cfg_lay.addWidget(QLabel(f"<span style='color:{ACC_TRG1}; font-size:13px; font-weight:bold;'>TRIGGER 1</span>"))
+        r, self.e_trig1_onset = make_input_row("Onset",    0,  "s");  cfg_lay.addWidget(r)
+        r, self.e_trig1_dur   = make_input_row("Duration", 10, "ms"); cfg_lay.addWidget(r)
+        cfg_lay.addSpacing(10)
+
+        # Trigger 2
+        cfg_lay.addWidget(QLabel(f"<span style='color:{ACC_TRG2}; font-size:13px; font-weight:bold;'>TRIGGER 2</span>"))
+        r, self.e_trig2_onset = make_input_row("Onset",    0,  "s");  cfg_lay.addWidget(r)
+        r, self.e_trig2_dur   = make_input_row("Duration", 10, "ms"); cfg_lay.addWidget(r)
+        cfg_lay.addSpacing(10)
+
         btn_add = make_button("+ ADD TRIAL", TEXT, BORDER)
         btn_add.clicked.connect(self._add_trial)
         cfg_lay.addWidget(btn_add)
@@ -1119,7 +1196,8 @@ class CageApp(QMainWindow):
         cols = ["#", "BASELINE", "ITI",
                 "SND ON", "SND DUR", "CARRIER", "MOD", "VOL",
                 "SHK ON", "SHK DUR", "PLS HI", "PLS LO",
-                "LIGHT ON", "LIGHT DUR", "LIGHT HZ", "DEL"]
+                "LIGHT ON", "LIGHT DUR", "LIGHT HZ",
+                "TRG1 ON", "TRG1 MS", "TRG2 ON", "TRG2 MS", "DEL"]
         self.tbl = QTableWidget(0, len(cols))
         self.tbl.setHorizontalHeaderLabels(cols)
         self.tbl.setStyleSheet(
@@ -1385,6 +1463,10 @@ class CageApp(QMainWindow):
             "light_duration":   self._get_float(self.e_light_dur),
             "light_freq":       self._get_float(self.e_light_freq),
             "bar_select":       0.0,  # Always round-robin for experiment trials
+            "onset_trig1":      self._get_float(self.e_trig1_onset),
+            "trig1_duration":   self._get_float(self.e_trig1_dur),
+            "onset_trig2":      self._get_float(self.e_trig2_onset),
+            "trig2_duration":   self._get_float(self.e_trig2_dur),
         }
         self.trials.append(t)
         self._refresh_table()
@@ -1404,6 +1486,8 @@ class CageApp(QMainWindow):
                 f"{t['onset_shock']}",  f"{t['shock_duration']}",
                 f"{t['pulse_high']}",   f"{t['pulse_low']}",
                 f"{t['onset_light']}",    f"{t['light_duration']}",   f"{t['light_freq']}",
+                f"{t.get('onset_trig1',0)}", f"{t.get('trig1_duration',0)}",
+                f"{t.get('onset_trig2',0)}", f"{t.get('trig2_duration',0)}",
             ]
             self.tbl.insertRow(i)
             for j, val in enumerate(vals):
@@ -1435,7 +1519,7 @@ class CageApp(QMainWindow):
     def _send_params(self):
         """
         Serialise self.trials and send the "program" command to the DUE.
-        Data format: N * 16 floats in FIELDS order, semicolon-separated,
+        Data format: N * 20 floats in FIELDS order, semicolon-separated,
         row-major (all fields of trial 0, then trial 1, etc.).
         """
         if not self._connected:
@@ -1490,10 +1574,12 @@ class CageApp(QMainWindow):
             cursor += t.get('baseline', 0) + t.get('silence', 0)
             delay_ms = int(cursor * 1000) + 100
             QTimer.singleShot(delay_ms, lambda g=gen: self._poll_if_current(g))
-            s_end = t.get('onset_sound', 0) + t.get('sound_duration', 0)
-            k_end = t.get('onset_shock', 0) + t.get('shock_duration', 0)
-            l_end = t.get('onset_light', 0) + t.get('light_duration', 0)
-            cursor += max(s_end, k_end, l_end, 0.0)
+            s_end  = t.get('onset_sound', 0) + t.get('sound_duration', 0)
+            k_end  = t.get('onset_shock',  0) + t.get('shock_duration',  0)
+            l_end  = t.get('onset_light',  0) + t.get('light_duration',  0)
+            t1_end = t.get('onset_trig1',  0) + t.get('trig1_duration',  0) / 1000.0
+            t2_end = t.get('onset_trig2',  0) + t.get('trig2_duration',  0) / 1000.0
+            cursor += max(s_end, k_end, l_end, t1_end, t2_end, 0.0)
             
     def _poll_status(self):
         """Request a status update from the DUE (called by _poll_timer)."""

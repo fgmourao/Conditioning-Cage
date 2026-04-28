@@ -16,6 +16,45 @@ This project is a full rewrite of the system described in:
 
 The original v1.0 architecture used an ESP8266 as a Wi-Fi master communicating with the Arduino DUE via SPI, with a browser-based HTML interface. Version 2.0 removes the ESP8266 entirely — a PyQt5 desktop application communicates directly with the DUE over its native USB port.
 
+Beyond the architectural change, v2.0 introduces several new capabilities: adaptive DAC lookup tables for lower harmonic distortion across the full frequency range, an AM modulation channel with configurable modulator frequency, two independent programmable digital trigger outputs (pins 10 and 11) for synchronising external equipment, an OLED status display, a hardware watchdog with fault detection, and a calibration interface with per-bar shock selection.
+
+
+---
+
+## Changes from v1.0 to v2.0
+
+### Architecture
+The ESP8266 Wi-Fi master and SPI bus are removed entirely. Python communicates directly with the DUE over its native USB port using newline-terminated JSON. All stimulus timing is handled autonomously by the DUE after a single `start` command — no real-time control from the host is required during execution.
+
+### Bug fixes and stability improvements
+
+**Shock clock decoupled from DAC** — in v1.0 the shock interval counter (`iCountShockIntervals`) was incremented inside the `carrier()` ISR, which ran at the DAC rate. Changing `carrier_freq` silently altered shock pulse timing. In v2.0 the shock has its own dedicated Timer6 running at a fixed 10 kHz, completely independent of the DAC.
+
+**Hardware ABORT pin pullup** — in v1.0 `pinABORT` was configured as `INPUT` with no pullup resistor, leaving the pin floating when the button was not pressed and susceptible to spurious aborts from electrical noise. In v2.0 it uses `INPUT_PULLUP`.
+
+**DAC disabled between sounds** — in v1.0 `analogWrite(DAC1, 0)` at sound offset wrote zero but left the DAC channel enabled, injecting DC noise into the amplifier between trials. In v2.0 `dacc_disable_channel` is called at every sound offset and the coupling capacitor is pre-charged to midscale before each onset to eliminate transients.
+
+**Shock pulse timing precision** — in v1.0 `floor()` was used to convert pulse times to tick counts, introducing a systematic downward truncation error. In v2.0 `roundf()` gives the nearest tick (0.1 ms resolution at 10 kHz).
+
+**Watchdog** — v1.0 had no hardware fault detection. If Timer4 or Timer6 stalled, the experiment continued silently with no stimuli. In v2.0 a software watchdog monitors both timers; if either stops incrementing for 5 seconds a fault is declared, all outputs are driven LOW, and the Python interface displays a critical alert.
+
+**DAC buffer type** — in v1.0 the DAC buffer was `uint32_t` (4 bytes per sample), wasting twice the RAM needed. In v2.0 it is `uint16_t` (2 bytes per sample), halving the buffer footprint to 2 KB.
+
+### Sound generation
+
+In v1.0 the carrier lookup table had a fixed 8 samples regardless of frequency. At low carrier frequencies (1–3 kHz) this produced visible harmonic distortion — only 8 points approximated each sine cycle. In v2.0 adaptive tables select 4, 8, 16, or 32 samples based on the carrier frequency, keeping the DAC update rate within the optimal range across the full 0–20 kHz span.
+
+### New stimuli and features
+
+- **LIGHT** — independent light stimulus (pin 45, square wave or DC HIGH) with its own onset, duration, and frequency per trial
+- **Trigger 1 / Trigger 2** — two independent digital pulse outputs (pins 10 and 11) for synchronising external equipment, with configurable onset (s) and duration (ms) per trial
+- **Baseline period** — quiet time before the first trial, separate from the inter-trial interval
+- **Per-trial volume control** — sound amplitude programmable per trial (0–100%)
+- **AM modulation** — configurable modulator frequency per trial; `modulator_freq = 0` gives a pure sine
+- **OLED status display** — real-time trial state on an SSD1306 128×32 display
+- **Bar selection** — calibration mode allows fixing a single shock bar for individual verification
+- **Python desktop interface** — replaces the ESP8266 HTML page with a PyQt5 application featuring a trial timeline preview, protocol save/load, event log, and calibration dialogs
+
 ---
 
 ## Architecture
@@ -34,6 +73,8 @@ Arduino DUE
       ├─ Pin 45       →  Light output
       ├─ Pin 46       →  Watchdog fault output
       ├─ Pin 48       →  Hardware ABORT input
+      ├─ Pin 10        →  Trigger 1 output (digital pulse)
+      ├─ Pin 11        →  Trigger 2 output (digital pulse)
       ├─ Pins 50–53   →  Sync outputs (SOUND, LIGHT, SHOCK, MOD)
       └─ Pins 20–21   →  I²C — OLED display (SDA / SCL)
 ```
@@ -44,7 +85,7 @@ The DUE stores the complete trial list in RAM and executes the experiment autono
 
 ## Stimuli
 
-Three independent stimuli with individual onset and duration per trial:
+Five independent stimuli with individual onset and duration per trial:
 
 ### Sound
 - Output: DAC1 (12-bit, 0–3.3 V)
@@ -62,11 +103,17 @@ Three independent stimuli with individual onset and duration per trial:
 - Round-robin activation or fixed single bar (calibration)
 - Pulse HIGH and LOW times configurable in ms (0.1 ms resolution at 10 kHz clock)
 
+### Trigger 1 / Trigger 2
+- Outputs: pin 10 (Trigger 1), pin 11 (Trigger 2)
+- Simple digital HIGH pulse: onset in seconds, duration in milliseconds
+- Independent of each other and of all other stimuli
+- Intended for synchronising external equipment (cameras, stimulators, recording systems)
+
 ---
 
 ## Trial structure
 
-Each trial stores 16 float parameters, transmitted semicolon-separated over serial:
+Each trial stores 20 float parameters, transmitted semicolon-separated over serial:
 
 | Field | Description | Unit |
 |---|---|---|
@@ -86,6 +133,10 @@ Each trial stores 16 float parameters, transmitted semicolon-separated over seri
 | `light_duration` | Light duration; 0 = no light | s |
 | `light_freq` | Light frequency; 9999 = DC HIGH | Hz |
 | `bar_select` | 0 = round-robin, 1–8 = fixed bar | — |
+| `onset_trig1` | Trigger 1 onset within trial; 0 = start of trial | s |
+| `trig1_duration` | Trigger 1 pulse duration; 0 = disabled | ms |
+| `onset_trig2` | Trigger 2 onset within trial; 0 = start of trial | s |
+| `trig2_duration` | Trigger 2 pulse duration; 0 = disabled | ms |
 
 ---
 
@@ -189,9 +240,9 @@ Python 3.8 or later.
 ### Features
 
 - Dark/Light-theme PyQt5 desktop application
-- Trial configuration panel: per-stimulus onset, duration, frequency, volume, pulse timing
+- Trial configuration panel: per-stimulus onset, duration, frequency, volume, pulse timing, trigger durations
 - Recorded trials table with per-row delete
-- Timeline preview: block diagram of all trials on a shared time axis with a real-time progress line during execution
+- Timeline preview: block diagram of all trials on a shared time axis with a real-time progress line during execution; rows are shown only for stimuli with non-zero duration
 - Event log with timestamps (`YYYY-MM-DD HH:MM:SS`) — exportable via Save Log
 - **Protocol menu:** Save Protocol, Load Protocol, Clear All Trials, Save Log
 - **Calibration menu:** Sound, Light, Shock — continuous single-trial stimulus stopped by ABORT; shock calibration allows bar selection and configurable pulse timing
@@ -216,6 +267,8 @@ The poll timer (`{"cmd":"status"}` every 1500 ms) is stopped when the experiment
 | USB connection | Native port (second USB connector) |
 | Shock bars | 8 outputs — pins 23, 25, 27, 29, 31, 33, 35, 37 |
 | Light output | Pin 45 |
+| Trigger 1 output | Pin 10 — digital pulse |
+| Trigger 2 output | Pin 11 — digital pulse |
 | ABORT button | Momentary switch — pin 48 to GND |
 | DAC coupling | 10 µF electrolytic capacitor in series on DAC1 |
 | Amplifier | Class-D module (e.g. TDA8932); 10–50 kΩ potentiometer at input |
@@ -253,7 +306,11 @@ Documentation licensed under Creative Commons Attribution-NonCommercial 4.0 Inte
 
 ---
 
-## Author
+## Authors
+
+**v1.0 (2019)**  
+Paulo Aparecido Amaral Junior, Flavio Afonso Goncalves Mourao, Marcio Flavio Dutra Moraes  
+*Núcleo de Neurociências, Federal University of Minas Gerais, Brazil*
 
 **v2.0 (2026)**  
 Flavio Afonso Goncalves Mourao — [mourao.fg@gmail.com](mailto:mourao.fg@gmail.com)  
