@@ -1,4 +1,5 @@
 # Conditioning Cage v2.0
+** Under development
 
 Hardware, firmware and desktop interface for classical fear conditioning.  
 Arduino DUE stimulus generator controlled by a Python/PyQt5 application over USB.
